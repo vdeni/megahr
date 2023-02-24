@@ -9,7 +9,7 @@ d <- readr::read_csv(here::here(
   "data",
   "psycholinguistic-estimates",
   "clean",
-  "megahr.csv"
+  "psycholinguistic-estimates.csv"
 ))
 
 d <- dplyr::select(
@@ -45,6 +45,6 @@ readr::write_csv(
     "data",
     "psycholinguistic-estimates",
     "clean",
-    "megahr.csv"
+    "psycholinguistic-estimates.csv"
   )
 )

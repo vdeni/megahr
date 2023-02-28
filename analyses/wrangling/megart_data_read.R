@@ -8,8 +8,15 @@ library(here)
 library(dplyr)
 
 v_select_cols <- c(
-  "id", "session", "block_no", "block_in_session", "trial",
-  "overall_acc_in_session", "stimulus_acc", "stimulus_rt", "string",
+  "id",
+  "session",
+  "block_no",
+  "block_in_session",
+  "trial",
+  "overall_acc_in_session",
+  "stimulus_acc",
+  "stimulus_rt",
+  "string",
   "string_type"
 )
 
@@ -43,7 +50,7 @@ readr::write_delim(
   file = here::here(
     "data",
     "megart",
-    "cleaned",
+    "clean",
     "data_megart.delim"
   ),
   delim = "|"

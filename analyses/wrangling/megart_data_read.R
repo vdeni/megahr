@@ -9,11 +9,6 @@ library(dplyr)
 
 v_select_cols <- c(
   "id",
-  "session",
-  "block_no",
-  "block_in_session",
-  "trial",
-  "overall_acc_in_session",
   "stimulus_acc",
   "stimulus_rt",
   "string",

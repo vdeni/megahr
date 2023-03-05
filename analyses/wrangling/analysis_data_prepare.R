@@ -3,6 +3,7 @@
 renv::activate()
 
 library(dplyr)
+library(tidyr)
 library(here)
 library(readr)
 
@@ -57,6 +58,35 @@ d_megart <- d_megart %>%
 
 n_post_nonword <- nrow(d_megart)
 
+# exclude incorrect responses
+d_megart <- d_megart %>%
+  dplyr::filter(
+    stimulus_acc == TRUE
+  )
+
+n_post_incorrect <- nrow(d_megart)
+
+# exclude reactions provided to words that have less than 40 reaction times
+v_word_exclude <- d_megart %>%
+  dplyr::summarise(
+    .data = .,
+    cnt = dplyr::n(),
+    .by = string
+  ) %>%
+  dplyr::filter(
+    .data = .,
+    cnt < 30
+  ) %>%
+  dplyr::pull(string)
+
+d_megart <- d_megart %>%
+  dplyr::filter(
+    .data = .,
+    !string %in% v_word_exclude
+  )
+
+n_post_rare_react_word <- nrow(d_megart)
+
 # squash psycholinguistic estimates data
 v_word_dupes <- d_psyling$string[duplicated(d_psyling$string)]
 
@@ -110,34 +140,43 @@ d_analysis <- dplyr::inner_join(
 
 n_post_intersect <- nrow(d_analysis)
 
-# exclude incorrect responses
-d_megart <- d_megart %>%
-  dplyr::filter(
-    stimulus_acc == TRUE
-  )
-
-n_post_incorrect <- nrow(d_megart)
-
-# exclude reactions provided to words that have less than 40 reaction times
-v_word_exclude <- d_megart %>%
-  dplyr::summarise(
+# transform ID to numeric for Stan
+d_analysis <- d_analysis %>%
+  tidyr::nest(
     .data = .,
-    cnt = dplyr::n(),
-    .by = string
+    .by = "id"
   ) %>%
-  dplyr::filter(
+  dplyr::mutate(
     .data = .,
-    cnt < 30
+    id = 1:dplyr::n()
   ) %>%
-  dplyr::pull(string)
-
-d_megart <- d_megart %>%
-  dplyr::filter(
+  tidyr::unnest(
+    data = .,
+    cols = "data"
+  ) %>%
+  tidyr::nest(
     .data = .,
-    !string %in% v_word_exclude
+    .by = "string"
+  ) %>%
+  dplyr::mutate(
+    .data = .,
+    string_id = 1:dplyr::n()
+  ) %>%
+  tidyr::unnest(
+    data = .,
+    cols = "data"
+  ) %>%
+  dplyr::select(
+    .data = .,
+    "id",
+    "string_id",
+    dplyr::everything()
+  ) %>%
+  dplyr::arrange(
+    .data = .,
+    id,
+    string_id
   )
-
-n_post_rare_react_word <- nrow(d_megart)
 
 # save exclusion info to RData object
 l_n_exclude <- ls(pattern = "n_post|n_total") %>%

@@ -30,7 +30,6 @@ ${DIR_DAT_PSYLING_CLEAN}/psycholinguistic-estimates.csv:\
 	${DIR_DAT_PSYLING_CLEAN}/megahr_wave-1.csv\
 	${DIR_DAT_PSYLING_CLEAN}/megahr_wave-2.csv
 	Rscript $<
-	rm ${DIR_DAT_PSYLING_CLEAN}/megahr_*.csv
 
 ${DIR_DAT_PSYLING_CLEAN}/megahr_wave-%.csv: ${DIR_DAT_PSYLING_RAW}/megahr_wave-%.tsv
 	sed -Ee 's/\t/,/g' $< > $@

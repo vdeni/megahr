@@ -1,0 +1,72 @@
+---
+output:
+    html_document:
+        theme: journal
+        highlight: zenburn
+---
+
+```{r setup}
+renv::activate()
+
+library(here)
+library(readr)
+library(dplyr)
+
+d_megart <- readr::read_delim(
+  here::here(
+    "data",
+    "megart",
+    "clean",
+    "data_megart.delim"
+  ),
+  delim = "|"
+)
+
+d_analysis <- readr::read_delim(
+  here::here(
+    "data",
+    "analysis",
+    "analysis-data.delim"
+  ),
+  delim = "|"
+)
+
+l_excludes <- readRDS(
+  here::here(
+    "data",
+    "helpers",
+    "l_n_exclude.RData"
+  )
+)
+```
+
+```{r counts}
+l_cnts <- list(
+  "total_ptcpt" = dplyr::n_distinct(d_megart$id),
+  "total_reactions" = nrow(d_megart),
+  "total_word" = dplyr::filter(d_megart, string_type == "word") %>%
+    dplyr::pull(string) %>%
+    dplyr::n_distinct(
+      .
+    ),
+  "total_pseudoword" = dplyr::filter(d_megart, string_type == "pseudoword") %>%
+    dplyr::pull(string) %>%
+    dplyr::n_distinct(.)
+)
+```
+
+In total, `r l_cnts$total_ptcpt` participants took part in the study,
+providing a total of `r l_cnts$total_reactions` reactions to
+`r l_cnts$total_word` words and `r l_cnts$total_pseudoword` pseudowords.
+We excluded all participants who had less than 90% of correct responses
+to the displayed stimuli (2 participants,
+`r l_excludes$n_total - l_excludes$n_post_accuracy` reactions).
+Next, we excluded all reactions to pseudowords, which left us with 
+`r l_excludes$n_post_nonword` reactions. After excluding all the incorrect
+responses, we were left with `r l_excludes$n_post_incorrect` data points.
+After exlcuding words to which less than 30 reactions were provided, we were
+left with `r l_excludes$n_post_rare_react_word` reactions. Finally, after
+intersecting the reaction time data with the psycholinguistic estimates data,
+we were left with `r l_excludes$n_post_intersect` reaction times to
+`r dplyr::n_distinct(d_analysis$string)` words. This data was subsequently
+analysed.

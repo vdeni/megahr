@@ -41,3 +41,7 @@ vignettes/*.pdf
 data/
 
 **/*.log
+
+analyses/stats/analyses_model*
+!analyses/stats/analyses_model*.stan
+!analyses/stats/analyses_model*.R

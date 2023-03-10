@@ -1,0 +1,41 @@
+---
+output:
+    html_document:
+        theme: journal
+        highlight: zenburn
+---
+
+```{r setup}
+renv::activate()
+
+library(here)
+library(readr)
+library(dplyr)
+
+d_megart <- readr::read_delim(
+  here::here(
+    "data",
+    "megart",
+    "clean",
+    "data_megart.delim"
+  ),
+  delim = "|"
+)
+
+d_analysis <- readr::read_delim(
+  here::here(
+    "data",
+    "analysis",
+    "analysis-data.delim"
+  ),
+  delim = "|"
+)
+
+l_excludes <- readRDS(
+  here::here(
+    "data",
+    "helpers",
+    "l_n_exclude.RData"
+  )
+)
+```

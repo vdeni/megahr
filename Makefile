@@ -24,7 +24,8 @@ all: data\
 data: ${DIR_DAT_MEGART_CLEAN}/data_megart.delim\
 	${DIR_DAT_PSYLING_CLEAN}/psycholinguistic-estimates.csv\
 	${DIR_DAT_HELPERS}/l_n_exclude.RData\
-	${DIR_DAT_ANALYSIS}/analysis-data.delim
+	${DIR_DAT_ANALYSIS}/analysis-data.delim\
+	${DIR_DAT_HELPERS}/model_params.RData
 
 ${DIR_DAT_MEGART_CLEAN}/data_megart.delim: ${DIR_SRC_WRANGLING}/megart_data_read.R\
 	${DIR_DAT_MEGART_RAW}/cda1012_dat_c_reaction-times_1.csv\
@@ -45,6 +46,10 @@ ${DIR_DAT_HELPERS}/l_n_exclude.RData\
 	${DIR_DAT_ANALYSIS}/analysis-data.delim &: analyses/wrangling/analysis_data_prepare.R
 	Rscript $<
 
+${DIR_DAT_HELPERS}/model_params.RData: ${DIR_STATS}/analyses_model-dev_solver.R\
+	$(wildcard ${DIR_STATS}/*.stan)
+	Rscript $<
+
 reports: ${DIR_STATS}/methods.html
 
 ${DIR_STATS}/%.html: ${DIR_STATS}/%.Rmd\
@@ -52,4 +57,3 @@ ${DIR_STATS}/%.html: ${DIR_STATS}/%.Rmd\
 	${DIR_DAT_MEGART_CLEAN}/data_megart.delim\
 	${DIR_DAT_PSYLING_CLEAN}/psycholinguistic-estimates.csv
 	Rscript -e 'renv::activate(); rmarkdown::render("$<")'
-

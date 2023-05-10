@@ -12,16 +12,6 @@ library(here)
 library(readr)
 library(dplyr)
 
-d_megart <- readr::read_delim(
-  here::here(
-    "data",
-    "megart",
-    "clean",
-    "data_megart.delim"
-  ),
-  delim = "|"
-)
-
 d_analysis <- readr::read_delim(
   here::here(
     "data",
@@ -31,11 +21,11 @@ d_analysis <- readr::read_delim(
   delim = "|"
 )
 
-l_excludes <- readRDS(
-  here::here(
+l_model_params <- readRDS(
+  file = here::here(
     "data",
     "helpers",
-    "l_n_exclude.RData"
+    "l_model_params.RData"
   )
 )
 ```

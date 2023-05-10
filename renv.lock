@@ -183,7 +183,13 @@
     "cmdstanr": {
       "Package": "cmdstanr",
       "Version": "0.5.3",
-      "Source": "unknown",
+      "Source": "GitHub",
+      "RemoteType": "github",
+      "RemoteHost": "api.github.com",
+      "RemoteUsername": "stan-dev",
+      "RemoteRepo": "cmdstanr",
+      "RemoteRef": "master",
+      "RemoteSha": "463c2de3cb657f6d04b074968c50bc1d21fac668",
       "Requirements": [
         "R",
         "R6",
@@ -194,7 +200,7 @@
         "processx",
         "withr"
       ],
-      "Hash": "c91c8643a5d25fb7aebb1e8031f6cdca"
+      "Hash": "158ab4f09f5bbd145367e5dd152cabc1"
     },
     "colorspace": {
       "Package": "colorspace",

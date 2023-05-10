@@ -6,7 +6,7 @@ library(dplyr)
 
 path_model <- here::here("analyses", "stats")
 
-l_model_params <- list()
+l_model_priors <- list()
 
 # mu and sigma for the alpha_0 distribution with 80% of values falling
 # in [500, 2000]
@@ -29,7 +29,7 @@ v_params_alpha <- params_alpha$summary() %>%
   dplyr::pull("mean") %>%
   as.vector(.)
 
-l_model_params$alpha_zero <- list(
+l_model_priors$alpha_zero <- list(
   "mu" = v_params_alpha[1],
   "sigma" = v_params_alpha[2]
 )
@@ -57,7 +57,7 @@ v_params_beta_len <- params_beta_len$summary() %>%
   dplyr::pull("mean") %>%
   as.vector(.)
 
-l_model_params$beta_len <- list(
+l_model_priors$beta_len <- list(
   "mu" = v_params_beta_len[1],
   "sigma" = v_params_beta_len[2]
 )
@@ -77,7 +77,7 @@ v_params_beta_subfreq <- params_beta_subfreq$summary() %>%
   dplyr::pull("mean") %>%
   as.vector(.)
 
-l_model_params$beta_subfreq <- list(
+l_model_priors$beta_subfreq <- list(
   "mu" = v_params_beta_subfreq[1],
   "sigma" = v_params_beta_subfreq[2]
 )
@@ -97,7 +97,7 @@ v_params_beta_aoa <- params_beta_aoa$summary() %>%
   dplyr::pull("mean") %>%
   as.vector(.)
 
-l_model_params$beta_aoa <- list(
+l_model_priors$beta_aoa <- list(
   "mu" = v_params_beta_aoa[1],
   "sigma" = v_params_beta_aoa[2]
 )
@@ -117,7 +117,7 @@ v_params_beta_concrete <- params_beta_concrete$summary() %>%
   dplyr::pull("mean") %>%
   as.vector(.)
 
-l_model_params$beta_concrete <- list(
+l_model_priors$beta_concrete <- list(
   "mu" = v_params_beta_concrete[1],
   "sigma" = v_params_beta_concrete[2]
 )
@@ -143,24 +143,23 @@ v_params_sigma <- params_sigma$summary() %>%
   dplyr::pull("mean") %>%
   as.vector(.)
 
-l_model_params$sigma <- list(
-  "mu" = v_params_sigma[1],
-  "sigma" = v_params_sigma[2]
+l_model_priors$sigma <- list(
+  "rate" = v_params_sigma[1]
 )
 
 # round all to three decimal places
-l_model_params <- rapply(
-  object = l_model_params,
+l_model_priors <- rapply(
+  object = l_model_priors,
   f = round,
   how = "replace",
   digits = 3
 )
 
 saveRDS(
-  object = l_model_params,
+  object = l_model_priors,
   file = here::here(
     "data",
     "helpers",
-    "model_params.RData"
+    "l_model_priors.RData"
   )
 )

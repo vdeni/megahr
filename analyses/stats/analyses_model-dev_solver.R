@@ -155,6 +155,16 @@ l_model_priors <- rapply(
   digits = 3
 )
 
+# add manually chosen hyperparameters
+l_model_priors$alpha_participants$mu <- 0
+l_model_priors$alpha_participants$sigma <- 0.1
+
+l_model_priors$gamma_words$mu <- 0
+l_model_priors$gamma_words$sigma <- 0.1
+
+l_model_priors$delta_participants$shape <- 160
+l_model_priors$delta_participants$rate <- 0.55
+
 saveRDS(
   object = l_model_priors,
   file = here::here(

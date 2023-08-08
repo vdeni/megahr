@@ -50,7 +50,7 @@ ${DIR_DAT_HELPERS}/l_n_exclude.RData\
 
 ${DIR_DAT_HELPERS}/l_model_priors.RData: ${DIR_STATS}/analyses_model-dev_solver.R\
 	$(wildcard ${DIR_STATS}/*.stan)
-	Rscript $<
+	Rscript ${DIR_STATS}/analyses_model-dev_solver.R
 
 ${DIR_DAT_HELPERS}/l_analysis_data.RData: ${DIR_STATS}/analyses_model_data.R
 	Rscript $<

@@ -1,5 +1,3 @@
-renv::activate()
-
 library(here)
 library(dplyr)
 library(tidyr)

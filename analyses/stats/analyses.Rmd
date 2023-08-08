@@ -6,26 +6,75 @@ output:
 ---
 
 ```{r setup}
-renv::activate()
-
-library(here)
-library(readr)
 library(dplyr)
+library(here)
+library(cmdstanr)
+library(purrr)
+library(ggplot2)
 
-d_analysis <- readr::read_delim(
+m_data <- readRDS(
   here::here(
-    "data",
-    "analysis",
-    "analysis-data.delim"
-  ),
-  delim = "|"
-)
-
-l_model_params <- readRDS(
-  file = here::here(
-    "data",
-    "helpers",
-    "l_model_params.RData"
+    "analyses",
+    "stats",
+    "analyses_model_fit.RData"
   )
 )
 ```
+
+# Checking the model fit
+
+```{r extract_draws_and_summary}
+d_draws <- m_data$draws(format = "df")
+d_summary <- m_data$summary()
+```
+
+Check the range of effective sample sizes:
+
+```{r check_ess}
+d_summary %>%
+  dplyr::select(
+    .,
+    ess_bulk,
+    ess_tail
+  ) %>%
+  purrr::map(., range)
+```
+
+ESSs just above 10k seem a little low. Examine the distribution:
+
+```{r ess_distributions}
+d_summary %>%
+  ggplot2::ggplot(
+    data = .,
+    mapping = ggplot2::aes(
+      x = ess_bulk
+    )
+  ) +
+  ggplot2::geom_histogram(
+    binwidth = 200
+  )
+```
+
+Most of the parameters have ESSs well above 75k, which is great. Let's see
+which parameters have ESSs less than 25k:
+
+```{r ess_le_25k}
+d_summary %>%
+  dplyr::filter(
+    .,
+    ess_bulk < 25000
+  ) %>%
+  dplyr::select(
+    ,
+    variable,
+    ess_bulk
+  ) %>%
+  dplyr::arrange(
+    .,
+    dplyr::desc(ess_bulk)
+  ) %>%
+  print.data.frame()
+```
+
+Most of the parameters are participant-specific deflections from the grand
+mean.

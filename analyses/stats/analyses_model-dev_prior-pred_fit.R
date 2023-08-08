@@ -1,5 +1,3 @@
-renv::activate()
-
 library(here)
 library(readr)
 library(cmdstanr)

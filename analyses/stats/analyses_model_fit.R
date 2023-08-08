@@ -1,28 +1,17 @@
-renv::activate()
-
 library(here)
 library(readr)
 library(dplyr)
 library(cmdstanr)
 
-d_analysis <- readr::read_delim(
-  file = here::here(
-    "data",
-    "analysis",
-    "analysis-data.delim"
-  ),
-  delim = "|"
-)
-
-l_model_priors <- readRDS(
+l_analysis_data <- readRDS(
   file = here::here(
     "data",
     "helpers",
-    "l_model_priors.RData"
+    "l_analysis_data.RData"
   )
 )
 
-model_fit <- cmdstanr::cmdstan_model(
+model_final <- cmdstanr::cmdstan_model(
   stan_file = here::here(
     "analyses",
     "stats",
@@ -33,5 +22,23 @@ model_fit <- cmdstanr::cmdstan_model(
       "helpers"
     ),
     here::here("analyses", "stats")
+  ),
+  stanc_options = list("O1")
+)
+
+model_fit <- model_final$sample(
+  data = l_analysis_data,
+  chains = 4,
+  parallel_chains = 4,
+  iter_warmup = 3000,
+  iter_sampling = 10000,
+  refresh = 10
+)
+
+model_fit$save_object(
+  file = here::here(
+    "analyses",
+    "stats",
+    "analyses_model_fit.RData"
   )
 )

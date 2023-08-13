@@ -8,7 +8,7 @@ m_fit <- readRDS(
   here::here(
     "analyses",
     "stats",
-    "01_fit.RData"
+    "analyses_model_fit.RData"
   )
 )
 
@@ -24,7 +24,7 @@ m_summary$ess_bulk %>%
 m_summary %>%
   dplyr::filter(
     .,
-    ess_bulk <= 500
+    ess_bulk <= 20000
   ) %>%
   dplyr::pull(variable)
 
@@ -48,6 +48,16 @@ bayesplot::mcmc_trace(
   pars = visualisation_params
 )
 
+bayesplot::mcmc_rank_overlay(
+  x = m_draws,
+  pars = visualisation_params
+)
+
+bayesplot::mcmc_acf(
+  x = m_draws,
+  pars = visualisation_params
+)
+
 visualisation_params <- m_summary$variable %>%
   stringr::str_subset(
     string = .,
@@ -55,6 +65,11 @@ visualisation_params <- m_summary$variable %>%
   )
 
 bayesplot::mcmc_trace(
+  x = m_draws,
+  pars = visualisation_params
+)
+
+bayesplot::mcmc_rank_overlay(
   x = m_draws,
   pars = visualisation_params
 )
@@ -71,6 +86,15 @@ bayesplot::mcmc_trace(
   pars = visualisation_params
 )
 
+bayesplot::mcmc_rank_overlay(
+  x = m_draws,
+  pars = visualisation_params
+)
+
+bayesplot::mcmc_acf(
+  x = m_draws,
+  pars = visualisation_params
+)
 
 visualisation_params <- m_summary$variable %>%
   stringr::str_subset(
@@ -84,6 +108,15 @@ bayesplot::mcmc_trace(
   pars = visualisation_params
 )
 
+bayesplot::mcmc_rank_overlay(
+  x = m_draws,
+  pars = visualisation_params
+)
+
+bayesplot::mcmc_acf(
+  x = m_draws,
+  pars = visualisation_params
+)
 
 visualisation_params <- m_summary$variable %>%
   stringr::str_subset(
@@ -92,6 +125,16 @@ visualisation_params <- m_summary$variable %>%
   )
 
 bayesplot::mcmc_trace(
+  x = m_draws,
+  pars = visualisation_params
+)
+
+bayesplot::mcmc_rank_overlay(
+  x = m_draws,
+  pars = visualisation_params
+)
+
+bayesplot::mcmc_acf(
   x = m_draws,
   pars = visualisation_params
 )

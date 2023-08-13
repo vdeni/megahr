@@ -23,7 +23,7 @@ m_data <- readRDS(
 
 # Checking the model fit
 
-```{r extract_draws_and_summary}
+```{r extract_draws_and_summary, cache = TRUE}
 d_draws <- m_data$draws(format = "df")
 d_summary <- m_data$summary()
 ```
@@ -78,3 +78,42 @@ d_summary %>%
 
 Most of the parameters are participant-specific deflections from the grand
 mean.
+
+# Model inference
+
+We fit a hierarchical Bayesian model using the Stan probabilistic programming
+language (REFERENCA) and the `cmdstanr` interface (REFERENCA) for the R
+programming language (REFERENCA). The model we fit assumes that each reaction
+time \(RT_{i}\) (where \(i \in \{1, \ldots, N\}\) indexes observations to which
+we fit the model) comes from a shifted log-normal distribution:
+
+\[
+    RT_{i} \sim \textrm{ShiftLogNormal}(\mu_{i}, \sigma, \delta_{P(i)}).
+\]
+
+We assumed that each distribution's mean \(\mu_{i}\) depends on the features
+of the pertinent word (\(W_{i}\)), as well as participant-specific
+(\(\alpha_{P(i)}\)) and word-specific (\(\gamma_{W(i)}\)) factors. As mentioned
+earlier, the word features we examined are word length
+(\(L_{i}\)), its subjective frequency (\(F_{i}\)), it age-of-acquisition
+(\(A_{i}\)), and its concreteness (\(C_{i}\)), with each feature's contribution
+presented by a \(\beta\) parameter. All these factors were represented as
+deflections from the grand mean \(\alpha_{0}\):
+
+\[
+    \mu_i = \alpha_{0} +
+        \alpha_{P(i)} +
+        L_i \times \beta_L +
+        F_i \times \beta_F +
+        A_i \times \beta_A +
+        C_i \times \beta_C +
+        \gamma_{W(i)}.
+\]
+
+We assumed a fixed variance of each of the reaction times' distributions
+(\(\sigma\)). Finally, to move the values sampled from the log-normal
+distributions away from zero (as reaction times cannot realistically be around
+zero milliseconds), we assumed a participant-specific shift parameter
+\(\delta_{P(i)}\).
+
+PRIORS?

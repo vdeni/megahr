@@ -461,8 +461,8 @@ display: none;
 <span id="cb12-8"><a href="#cb12-8" tabindex="-1"></a>    <span class="st">&quot;analyses_model_fit.RData&quot;</span></span>
 <span id="cb12-9"><a href="#cb12-9" tabindex="-1"></a>  )</span>
 <span id="cb12-10"><a href="#cb12-10" tabindex="-1"></a>)</span></code></pre></div>
-<div id="checking-the-model-fit" class="section level1">
-<h1>Checking the model fit</h1>
+<div id="checking-the-sampling-behavior" class="section level1">
+<h1>Checking the sampling behavior</h1>
 <div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" tabindex="-1"></a>d_draws <span class="ot">&lt;-</span> m_data<span class="sc">$</span><span class="fu">draws</span>(<span class="at">format =</span> <span class="st">&quot;df&quot;</span>)</span>
 <span id="cb13-2"><a href="#cb13-2" tabindex="-1"></a>d_summary <span class="ot">&lt;-</span> m_data<span class="sc">$</span><span class="fu">summary</span>()</span></code></pre></div>
 <p>Check the range of effective sample sizes:</p>
@@ -591,9 +591,15 @@ these factors were represented as deflections from the grand mean <span class="m
 <p>We assumed a fixed variance of each of the reaction times’
 distributions (<span class="math inline">\(\sigma\)</span>). Finally, to
 move the values sampled from the log-normal distributions away from zero
-(as reaction times realistically cannot be around zero milliseconds), we
+(as reaction times cannot realistically be around zero milliseconds), we
 assumed a participant-specific shift parameter <span class="math inline">\(\delta_{P(i)}\)</span>.</p>
-<p>PRIORS?</p>
+<p>The model priors were set so as to try to constrain the values of the
+parameters to a range which is plausible given existing research. The
+complete procedure for generating the priors is visible in the
+supplementary materials.</p>
+</div>
+<div id="model-fit" class="section level1">
+<h1>Model fit</h1>
 </div>
 
 

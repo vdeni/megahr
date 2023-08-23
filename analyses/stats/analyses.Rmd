@@ -21,7 +21,7 @@ m_data <- readRDS(
 )
 ```
 
-# Checking the model fit
+# Checking the sampling behavior
 
 ```{r extract_draws_and_summary, cache = TRUE}
 d_draws <- m_data$draws(format = "df")
@@ -116,4 +116,10 @@ distributions away from zero (as reaction times cannot realistically be around
 zero milliseconds), we assumed a participant-specific shift parameter
 \(\delta_{P(i)}\).
 
-PRIORS?
+The model priors were set so as to try to constrain the values of the
+parameters to a range which is plausible given existing research. The complete
+procedure for generating the priors is visible in the supplementary materials.
+
+# Model fit
+
+

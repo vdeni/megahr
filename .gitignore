@@ -1,6 +1,7 @@
 # History files
 .Rhistory
 .Rapp.history
+**/.Rprofile
 
 # Session Data files
 .RData
@@ -41,6 +42,8 @@ vignettes/*.pdf
 data/
 
 **/*.log
+
+**/*RData
 
 analyses/stats/analyses_files/
 analyses/stats/analyses_model*

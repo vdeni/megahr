@@ -11,6 +11,8 @@ library(here)
 library(cmdstanr)
 library(purrr)
 library(ggplot2)
+library(duckdb)
+library(DBI)
 
 m_data <- readRDS(
   here::here(
@@ -19,13 +21,24 @@ m_data <- readRDS(
     "analyses_model_fit.RData"
   )
 )
+
+duck_conn <- DBI::dbConnect(
+  drv = duckdb::duckdb(),
+  dbdir = here::here(
+    "analyses",
+    "stats",
+    "analyses_model_generated-quantities.duckdb"
+  )
+)
 ```
 
 # Checking the sampling behavior
 
 ```{r extract_draws_and_summary, cache = TRUE}
-d_draws <- m_data$draws(format = "df")
-d_summary <- m_data$summary()
+d_posterior_draws <- m_data$draws(format = "df")
+d_posterior_summary <- m_data$summary()
+
+d_genquant_draws <- generated_quantities$draws(format = "df")
 ```
 
 Check the range of effective sample sizes:
@@ -122,4 +135,9 @@ procedure for generating the priors is visible in the supplementary materials.
 
 # Model fit
 
+In order to asses model fit, we generated 
+
+```{r closing}
+duckdb::duckdb_shutdown(drv = duck_conn)
+```
 

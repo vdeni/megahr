@@ -44,6 +44,7 @@ data/
 **/*.log
 
 **/*RData
+**/*parquet
 
 analyses/stats/analyses_files/
 analyses/stats/analyses_model*

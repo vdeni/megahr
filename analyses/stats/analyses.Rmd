@@ -12,7 +12,7 @@ library(cmdstanr)
 library(purrr)
 library(ggplot2)
 library(duckdb)
-library(DBI)
+library(readr)
 
 m_data <- readRDS(
   here::here(
@@ -22,13 +22,32 @@ m_data <- readRDS(
   )
 )
 
+d_observed <- readr::read_delim(
+  file = here::here(
+    "data",
+    "analysis",
+    "analysis-data.delim"
+  ),
+  delim = "|"
+)
+
 duck_conn <- DBI::dbConnect(
   drv = duckdb::duckdb(),
   dbdir = here::here(
-    "analyses",
-    "stats",
+    "data",
+    "analysis",
     "analyses_model_generated-quantities.duckdb"
-  )
+  ),
+  read_only = TRUE
+)
+
+DBI::dbExecute(
+  conn = duck_conn,
+  statement = "SET enable_progress_bar=true"
+)
+DBI::dbExecute(
+  conn = duck_conn,
+  statement = "SET threads TO 4"
 )
 ```
 
@@ -37,14 +56,12 @@ duck_conn <- DBI::dbConnect(
 ```{r extract_draws_and_summary, cache = TRUE}
 d_posterior_draws <- m_data$draws(format = "df")
 d_posterior_summary <- m_data$summary()
-
-d_genquant_draws <- generated_quantities$draws(format = "df")
 ```
 
 Check the range of effective sample sizes:
 
 ```{r check_ess}
-d_summary %>%
+d_posterior_summary %>%
   dplyr::select(
     .,
     ess_bulk,
@@ -56,7 +73,7 @@ d_summary %>%
 ESSs just above 10k seem a little low. Examine the distribution:
 
 ```{r ess_distributions}
-d_summary %>%
+d_posterior_summary %>%
   ggplot2::ggplot(
     data = .,
     mapping = ggplot2::aes(
@@ -72,7 +89,7 @@ Most of the parameters have ESSs well above 75k, which is great. Let's see
 which parameters have ESSs less than 25k:
 
 ```{r ess_le_25k}
-d_summary %>%
+d_posterior_summary %>%
   dplyr::filter(
     .,
     ess_bulk < 25000
@@ -135,9 +152,117 @@ procedure for generating the priors is visible in the supplementary materials.
 
 # Model fit
 
-In order to asses model fit, we generated 
+```{r gen_quant_data}
+. <- DBI::dbGetQuery(
+  conn = duck_conn,
+  statement = "
+    SELECT max(draw) AS max_draw
+    FROM generated_quantities
+  "
+) %>%
+  dplyr::pull(max_draw)
+
+l_gen_quant <- list(
+  "n_draws" = .
+)
+```
+
+In order to asses model fit, we simulated `r l_gen_quant[['n_draws']]` sets of
+reaction times from the fitted model, using the obtained posterior parameter
+estimates. \ref{fig_ppc_raw_data} shows a random sample of 1000 of the
+individual observed reaction times (ordered by magnitude). The shaded area
+marks the range which contains the central 90% of the simulated reaction time
+value distributions for each data point.
+
+We see that the reaction time values simulated from the fitted model are mostly
+compatible with the observed values. The most severe fit issues are visible for
+observed values having reaction times above approximately 1 second. This may
+not be surprising since such reaction times make up only
+`r round(mean(d_observed$stimulus_rt >= 1000) * 100, 2)`% of the complete
+dataset, and represent reactions which may be considered outliers (the
+longest observed reaction time in the plotted sample was longer than 5
+seconds, and its point is not visible in \ref{fig_ppc_raw_data}).
+
+```{r fig.cap="\\label{fig_ppc_raw_data}", dev="png", cache=TRUE}
+set.seed(1)
+sample_idx <- sample(
+  x = 1:nrow(d_observed),
+  size = 1000,
+  replace = FALSE
+) %>%
+  sort()
+
+
+d_observed$rt_id <- 1:nrow(d_observed)
+d_observed_sample <- dplyr::filter(
+  .data = d_observed,
+  rt_id %in% sample_idx
+)
+d_observed_sample <- dplyr::arrange(
+  .data = d_observed_sample,
+  stimulus_rt
+)
+
+d_rep_summarised <- DBI::dbGetQuery(
+  conn = duck_conn,
+  statement = "
+    SELECT y_rt_rep_id,
+        quantile(y_rt_rep_ms, 0.9) AS q90_rt_ms,
+        quantile(y_rt_rep_ms, 0.1) AS q10_rt_ms
+    FROM generated_quantities
+    WHERE y_rt_rep_id IN ( ? )
+    GROUP BY y_rt_rep_id
+    ORDER BY y_rt_rep_id
+  ",
+  list(sample_idx)
+)
+d_rep_summarised <- d_rep_summarised[
+  base::match(d_observed_sample$rt_id, d_rep_summarised$y_rt_rep_id),
+]
+
+d_rep_summarised$plotting_id <- 1:nrow(d_rep_summarised)
+d_observed_sample$plotting_id <- 1:nrow(d_observed_sample)
+
+d_rep_summarised %>%
+  ggplot2::ggplot(
+    data = .,
+    mapping = ggplot2::aes(
+      x = plotting_id,
+      ymin = q10_rt_ms,
+      ymax = q90_rt_ms
+    )
+  ) +
+  ggplot2::geom_ribbon(color = "grey", fill = "grey") +
+  ggplot2::geom_point(
+    inherit.aes = FALSE,
+    data = d_observed_sample,
+    mapping = aes(
+      x = plotting_id,
+      y = stimulus_rt
+    ),
+    shape = 20
+  ) +
+  ggplot2::coord_cartesian(
+    ylim = c(0, 3000)
+  ) +
+  ggplot2::scale_y_continuous(
+    breaks = seq(0, 3000, 500)
+  ) +
+  ggplot2::theme(
+    panel.grid.major.y = ggplot2::element_line(
+      linetype = "dashed",
+      color = "black",
+      linewidth = 0.1
+    )
+  ) +
+  ggplot2::labs(
+    x = "Reaction time ID",
+    y = "Reaction time (ms)"
+  )
+```
+
 
 ```{r closing}
-duckdb::duckdb_shutdown(drv = duck_conn)
+DBI::dbDisconnect(con = duck_conn, shutdown = TRUE)
 ```
 

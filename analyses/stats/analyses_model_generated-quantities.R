@@ -50,9 +50,11 @@ d_draws_gen_quant <- dplyr::as_tibble(d_draws_gen_quant)
 d_draws_gen_quant <- tidyr::pivot_longer(
   data = d_draws_gen_quant,
   cols = dplyr::matches("y_rep"),
-  names_pattern = "y_rep_(\\d)",
+  names_pattern = "y_rep_(\\d+)",
   names_to = "y_rt_rep_id",
-  values_to = "y_rt_rep_ms"
+  names_transform = as.integer,
+  values_to = "y_rt_rep_ms",
+  values_transform = as.integer
 )
 
 gc()
@@ -60,8 +62,8 @@ gc()
 arrow::write_parquet(
   x = d_draws_gen_quant,
   sink = here::here(
-    "analyses",
-    "stats",
+    "data",
+    "analysis",
     "analyses_model_generated-quantities.parquet"
   )
 )
@@ -69,8 +71,8 @@ arrow::write_parquet(
 duck_conn <- DBI::dbConnect(
   drv = duckdb::duckdb(),
   dbdir = here::here(
-    "analyses",
-    "stats",
+    "data",
+    "analysis",
     "analyses_model_generated-quantities.duckdb"
   )
 )
@@ -82,13 +84,30 @@ DBI::dbExecute(
 
 DBI::dbExecute(
   conn = duck_conn,
+  statement = "
+    CREATE TABLE generated_quantities (
+        draw INT,
+        y_rt_rep_id INT,
+        y_rt_rep_ms INT
+     )"
+)
+
+DBI::dbExecute(
+  conn = duck_conn,
+  statement = "
+    CREATE INDEX y_rep_idx ON generated_quantities (y_rt_rep_id);
+  "
+)
+
+DBI::dbExecute(
+  conn = duck_conn,
   statement = glue::glue_sql(
-    "CREATE TABLE generated_quantities AS ",
+    "INSERT INTO generated_quantities ",
     "SELECT * ",
     "FROM {
         here::here(
-            'analyses',
-            'stats',
+            'data',
+            'analysis',
             'analyses_model_generated-quantities.parquet'
         )
     }",

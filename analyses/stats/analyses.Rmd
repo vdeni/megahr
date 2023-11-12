@@ -13,6 +13,10 @@ library(purrr)
 library(ggplot2)
 library(duckdb)
 library(readr)
+library(knitr)
+library(kableExtra)
+
+ggplot2::theme_set(ggplot2::theme_minimal())
 
 m_data <- readRDS(
   here::here(
@@ -55,7 +59,26 @@ DBI::dbExecute(
 
 ```{r extract_draws_and_summary, cache = TRUE}
 d_posterior_draws <- m_data$draws(format = "df")
+
 d_posterior_summary <- m_data$summary()
+.quantiles <- m_data$summary(
+  quantiles = ~ quantile(., probs = c(0.025, 0.975))
+) %>%
+  dplyr::rename(
+    .,
+    "q025" = "2.5%",
+    "q975" = "97.5%"
+  )
+d_posterior_summary <- d_posterior_summary %>%
+  dplyr::left_join(
+    .,
+    .quantiles,
+    by = "variable"
+  ) %>%
+  dplyr::select(
+    .,
+    -c(q5, q95)
+  )
 ```
 
 Check the range of effective sample sizes:
@@ -261,6 +284,81 @@ d_rep_summarised %>%
   )
 ```
 
+# Parameter estimates
+
+The parameters we were most interested in were the coefficients for the
+association between reaction times and word length, age of acquisition,
+concreteness and subjective frequency. The posterior parameter estimates
+obtained after fitting the model are shown in the table below:
+
+```{r parameter estimates}
+d_posterior_summary %>%
+  dplyr::filter(
+    .,
+    startsWith(variable, "beta")
+  ) %>%
+  dplyr::select(
+    .,
+    variable,
+    mean,
+    median,
+    sd,
+    q025,
+    q975
+  ) %>%
+  dplyr::mutate(
+    .,
+    dplyr::across(
+      .cols = variable,
+      .fn = \(varname) dplyr::case_when(
+        varname == "beta_length" ~ "Length",
+        varname == "beta_aoa" ~ "AoA",
+        varname == "beta_subfreq" ~ "Subjective frequency",
+        varname == "beta_concreteness" ~ "Concreteness"
+      )
+    )
+  ) %>%
+  knitr::kable(
+    .,
+    format = "html",
+    col.names = c(
+      "Variable",
+      "Mean",
+      "Median",
+      "SD",
+      "Q00.25",
+      "Q97.50"
+    ),
+    digits = 3,
+    caption = "
+        A summary of 40000 posterior estimates of the coefficients
+        for word length, concreteness, subjective frequency and age
+        of acquisition (AoA).
+    "
+  ) %>%
+  kableExtra::kable_styling()
+```
+
+As can be seen by looking at the central 95% percentile intervals in the table
+above, all coefficients except for the one associated with word concreteness
+do not entail zero. They also imply relations consistent with extant literature
+--- longer reaction times are associated with longer words and words that were
+acquired later in life. On the other hand, shorter reaction times are associated
+with words which are encountered more often in everyday life.
+
+Since we have assumed that the reaction times can be modeled by a shifted
+lognormal distribution, the interpretaion of the estimated coefficients may
+be unintuitive. This is because a unit increase in one of the predictors
+is not related to a constant increase in the criterion. Therefore, we produce
+the plots below, which show the predicted reaction times when all predictors
+except a focal one are fixed to a certain value.
+
+We'll fix each of the non-focal variables' value to the sample mean. The
+participant-specific \(alpha\) coefficients are set to 0, which corresponds
+to no strong participant-specific contribution to the magnitude of the predicted
+reaction times. The \(delta\) coefficient was also set to 0 since it only
+shifts the distribution left or right, and doesn't influence the relationship
+between the other predictors.
 
 ```{r closing}
 DBI::dbDisconnect(con = duck_conn, shutdown = TRUE)

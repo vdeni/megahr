@@ -2,6 +2,8 @@ library(here)
 library(cmdstanr)
 library(readr)
 library(dplyr)
+library(ggplot2)
+library(stringr)
 
 l_data <- readRDS(here::here("data", "helpers", "l_analysis_data.RData"))
 
@@ -67,6 +69,45 @@ counterfactual_lengths <- counterfactual_model$generate_quantities(
 
 counterfactual_lengths_summary <- counterfactual_lengths$summary(
   "mean" = mean,
-  "median" = median,
   "quantiles" = ~ quantile(., probs = c(.025, .975))
+) %>%
+  dplyr::rename(
+    .,
+    "q025" = "2.5%",
+    "q975" = "97.5%"
+  )
+counterfactual_lengths_summary$word_length <- stringr::str_extract(
+  counterfactual_lengths_summary$variable,
+  r"{\d+(?=\])}"
+) %>%
+  as.integer(.) %>%
+  {
+    . + 1
+  }
+
+counterfactual_lengths_summary$rt_id <- stringr::str_extract(
+  counterfactual_lengths_summary$variable,
+  r"{(?<=\[)\d+}"
+) %>%
+  as.integer(.)
+
+plot_data <- dplyr::summarise(
+  counterfactual_lengths_summary,
+  m_rt = mean(mean),
+  m_q025 = mean(q025),
+  m_q975 = mean(q975),
+  .by = "word_length"
 )
+
+ggplot2::ggplot(
+  data = plot_data,
+  mapping = ggplot2::aes(
+    x = word_length,
+    y = m_rt,
+    ymin = m_q025,
+    ymax = m_q975
+  )
+) +
+  ggplot2::geom_ribbon(fill = "gray") +
+  ggplot2::geom_line(color = "black") +
+  ggplot2::theme_minimal()

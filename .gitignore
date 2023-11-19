@@ -50,3 +50,7 @@ analyses/stats/analyses_files/
 analyses/stats/analyses_model*
 !analyses/stats/analyses_model*.stan
 !analyses/stats/analyses_model*.R
+
+analyses/stats/analyses_counterfactual*
+!analyses/stats/analyses_counterfactual*.stan
+!analyses/stats/analyses_counterfactual*.R

@@ -353,12 +353,14 @@ is not related to a constant increase in the criterion. Therefore, we produce
 the plots below, which show the predicted reaction times when all predictors
 except a focal one are fixed to a certain value.
 
-We'll fix each of the non-focal variables' value to the sample mean. The
-participant-specific \(alpha\) coefficients are set to 0, which corresponds
+We'll fix each of the non-focal predictors' value to the sample mean. The
+participant-specific \(alpha_S\) coefficients are set to 0, which corresponds
 to no strong participant-specific contribution to the magnitude of the predicted
-reaction times. The \(delta\) coefficient was also set to 0 since it only
-shifts the distribution left or right, and doesn't influence the relationship
-between the other predictors.
+reaction times. The same was done for the word-specific coefficients
+\(\gamma_W\). The \(delta\) coefficient was also set to 0 since it only shifts
+the distribution left or right, and doesn't influence the relationship between
+the other predictors. Furthermore, the \(\alpha_0\) and \(\delta\)
+coefficients are set to their respective posterior means.
 
 ```{r closing}
 DBI::dbDisconnect(con = duck_conn, shutdown = TRUE)

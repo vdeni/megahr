@@ -1,8 +1,10 @@
 // shifted lognormal probability density function
-real shift_lognormal_pdf(real y,
-												 real mu,
-												 real sigma,
-												 real delta) {
+real shift_lognormal_pdf(
+  real y,
+  real mu,
+  real sigma,
+  real delta
+) {
 	real p;
 
 	p = (1.0 / ((y - delta) * sigma * sqrt(2 * pi()))) *
@@ -11,10 +13,12 @@ real shift_lognormal_pdf(real y,
 	return p;
 }
 
-real shift_lognormal_lpdf(real y,
-													real mu,
-													real sigma,
-													real delta) {
+real shift_lognormal_lpdf(
+  real y,
+  real mu,
+  real sigma,
+  real delta
+) {
 	real p;
 
 	p = (1.0 / ((y - delta) * sigma * sqrt(2 * pi()))) *
@@ -24,18 +28,22 @@ real shift_lognormal_lpdf(real y,
 }
 
 // shifted lognormal random number generator
-real shift_lognormal_rng(real mu,
-												 real sigma,
-												 real delta) {
+real shift_lognormal_rng(
+  real mu,
+  real sigma,
+  real delta
+) {
 
 	return delta + lognormal_rng(mu, sigma);
 }
 
 // shifted lognormal cdf
-real shift_lognormal_cdf(real x,
-												 real mu,
-												 real sigma,
-												 real delta) {
+real shift_lognormal_cdf(
+  real x,
+  real mu,
+  real sigma,
+  real delta
+) {
 	real p;
 
 	p = (1.0 / 2.0) * (1 + erf((log(x - delta) - mu) / (sigma * sqrt(2))));
@@ -44,10 +52,12 @@ real shift_lognormal_cdf(real x,
 }
 
 // shifted lognormal log cdf
-real shift_lognormal_lcdf(real x,
-													real mu,
-													real sigma,
-													real delta) {
+real shift_lognormal_lcdf(
+  real x,
+  real mu,
+  real sigma,
+  real delta
+) {
 	real p;
 
 	p = shift_lognormal_cdf(x | mu, sigma, delta);

@@ -29,7 +29,7 @@ generated quantities {
         beta_aoa * aoa_fixed +
         beta_concreteness * concreteness_fixed;
 
-      rt_rep[i, j - 1] = shift_lognormal_rng(
+      rt_rep[i, j - min_wordlen] = shift_lognormal_rng(
         mu,
         sigma_rt_fixed,
         0

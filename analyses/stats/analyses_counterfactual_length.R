@@ -51,7 +51,7 @@ counterfactual_model <- cmdstanr::cmdstan_model(
     stanc_options = list("O1")
 )
 
-l_data[["N_subsample"]] <- N_draws
+l_data[["N_subsample"]] <- 500
 l_data[["min_wordlen"]] <- 2
 l_data[["max_wordlen"]] <- 12
 l_data[["alpha_0_fixed"]] <- posterior_means[["alpha_0"]]
@@ -162,6 +162,8 @@ ggplot2::ggsave(
         "counterfactual_length.png"
     ),
     device = "png",
-    dpi = 400,
-    bg = "white"
+    dpi = 600,
+    bg = "white",
+    width = 9,
+    height = 9 * 9 / 16
 )

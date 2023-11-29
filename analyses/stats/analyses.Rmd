@@ -19,39 +19,39 @@ library(kableExtra)
 ggplot2::theme_set(ggplot2::theme_minimal())
 
 m_data <- readRDS(
-  here::here(
-    "analyses",
-    "stats",
-    "analyses_model_fit.RData"
-  )
+    here::here(
+        "analyses",
+        "stats",
+        "analyses_model_fit.RData"
+    )
 )
 
 d_observed <- readr::read_delim(
-  file = here::here(
-    "data",
-    "analysis",
-    "analysis-data.delim"
-  ),
-  delim = "|"
+    file = here::here(
+        "data",
+        "analysis",
+        "analysis-data.delim"
+    ),
+    delim = "|"
 )
 
 duck_conn <- DBI::dbConnect(
-  drv = duckdb::duckdb(),
-  dbdir = here::here(
-    "data",
-    "analysis",
-    "analyses_model_generated-quantities.duckdb"
-  ),
-  read_only = TRUE
+    drv = duckdb::duckdb(),
+    dbdir = here::here(
+        "data",
+        "analysis",
+        "analyses_model_generated-quantities.duckdb"
+    ),
+    read_only = TRUE
 )
 
 DBI::dbExecute(
-  conn = duck_conn,
-  statement = "SET enable_progress_bar=true"
+    conn = duck_conn,
+    statement = "SET enable_progress_bar=true"
 )
 DBI::dbExecute(
-  conn = duck_conn,
-  statement = "SET threads TO 4"
+    conn = duck_conn,
+    statement = "SET threads TO 4"
 )
 ```
 
@@ -62,50 +62,50 @@ d_posterior_draws <- m_data$draws(format = "df")
 
 d_posterior_summary <- m_data$summary()
 .quantiles <- m_data$summary(
-  quantiles = ~ quantile(., probs = c(0.025, 0.975))
+    quantiles = ~ quantile(., probs = c(0.025, 0.975))
 ) %>%
-  dplyr::rename(
-    .,
-    "q025" = "2.5%",
-    "q975" = "97.5%"
-  )
+    dplyr::rename(
+        .,
+        "q025" = "2.5%",
+        "q975" = "97.5%"
+    )
 d_posterior_summary <- d_posterior_summary %>%
-  dplyr::left_join(
-    .,
-    .quantiles,
-    by = "variable"
-  ) %>%
-  dplyr::select(
-    .,
-    -c(q5, q95)
-  )
+    dplyr::left_join(
+        .,
+        .quantiles,
+        by = "variable"
+    ) %>%
+    dplyr::select(
+        .,
+        -c(q5, q95)
+    )
 ```
 
 Check the range of effective sample sizes:
 
 ```{r check_ess}
 d_posterior_summary %>%
-  dplyr::select(
-    .,
-    ess_bulk,
-    ess_tail
-  ) %>%
-  purrr::map(., range)
+    dplyr::select(
+        .,
+        ess_bulk,
+        ess_tail
+    ) %>%
+    purrr::map(., range)
 ```
 
 ESSs just above 10k seem a little low. Examine the distribution:
 
 ```{r ess_distributions}
 d_posterior_summary %>%
-  ggplot2::ggplot(
-    data = .,
-    mapping = ggplot2::aes(
-      x = ess_bulk
+    ggplot2::ggplot(
+        data = .,
+        mapping = ggplot2::aes(
+            x = ess_bulk
+        )
+    ) +
+    ggplot2::geom_histogram(
+        binwidth = 200
     )
-  ) +
-  ggplot2::geom_histogram(
-    binwidth = 200
-  )
 ```
 
 Most of the parameters have ESSs well above 75k, which is great. Let's see
@@ -113,20 +113,20 @@ which parameters have ESSs less than 25k:
 
 ```{r ess_le_25k}
 d_posterior_summary %>%
-  dplyr::filter(
-    .,
-    ess_bulk < 25000
-  ) %>%
-  dplyr::select(
-    ,
-    variable,
-    ess_bulk
-  ) %>%
-  dplyr::arrange(
-    .,
-    dplyr::desc(ess_bulk)
-  ) %>%
-  print.data.frame()
+    dplyr::filter(
+        .,
+        ess_bulk < 25000
+    ) %>%
+    dplyr::select(
+        ,
+        variable,
+        ess_bulk
+    ) %>%
+    dplyr::arrange(
+        .,
+        dplyr::desc(ess_bulk)
+    ) %>%
+    print.data.frame()
 ```
 
 Most of the parameters are participant-specific deflections from the grand
@@ -177,16 +177,16 @@ procedure for generating the priors is visible in the supplementary materials.
 
 ```{r gen_quant_data}
 . <- DBI::dbGetQuery(
-  conn = duck_conn,
-  statement = "
+    conn = duck_conn,
+    statement = "
     SELECT max(draw) AS max_draw
     FROM generated_quantities
   "
 ) %>%
-  dplyr::pull(max_draw)
+    dplyr::pull(max_draw)
 
 l_gen_quant <- list(
-  "n_draws" = .
+    "n_draws" = .
 )
 ```
 
@@ -209,26 +209,26 @@ seconds, and its point is not visible in \ref{fig_ppc_raw_data}).
 ```{r fig.cap="\\label{fig_ppc_raw_data}", dev="png", cache=TRUE}
 set.seed(1)
 sample_idx <- sample(
-  x = 1:nrow(d_observed),
-  size = 1000,
-  replace = FALSE
+    x = 1:nrow(d_observed),
+    size = 1000,
+    replace = FALSE
 ) %>%
-  sort()
+    sort()
 
 
 d_observed$rt_id <- 1:nrow(d_observed)
 d_observed_sample <- dplyr::filter(
-  .data = d_observed,
-  rt_id %in% sample_idx
+    .data = d_observed,
+    rt_id %in% sample_idx
 )
 d_observed_sample <- dplyr::arrange(
-  .data = d_observed_sample,
-  stimulus_rt
+    .data = d_observed_sample,
+    stimulus_rt
 )
 
 d_rep_summarised <- DBI::dbGetQuery(
-  conn = duck_conn,
-  statement = "
+    conn = duck_conn,
+    statement = "
     SELECT y_rt_rep_id,
         quantile(y_rt_rep_ms, 0.9) AS q90_rt_ms,
         quantile(y_rt_rep_ms, 0.1) AS q10_rt_ms
@@ -237,51 +237,51 @@ d_rep_summarised <- DBI::dbGetQuery(
     GROUP BY y_rt_rep_id
     ORDER BY y_rt_rep_id
   ",
-  list(sample_idx)
+    list(sample_idx)
 )
 d_rep_summarised <- d_rep_summarised[
-  base::match(d_observed_sample$rt_id, d_rep_summarised$y_rt_rep_id),
+    base::match(d_observed_sample$rt_id, d_rep_summarised$y_rt_rep_id),
 ]
 
 d_rep_summarised$plotting_id <- 1:nrow(d_rep_summarised)
 d_observed_sample$plotting_id <- 1:nrow(d_observed_sample)
 
 d_rep_summarised %>%
-  ggplot2::ggplot(
-    data = .,
-    mapping = ggplot2::aes(
-      x = plotting_id,
-      ymin = q10_rt_ms,
-      ymax = q90_rt_ms
+    ggplot2::ggplot(
+        data = .,
+        mapping = ggplot2::aes(
+            x = plotting_id,
+            ymin = q10_rt_ms,
+            ymax = q90_rt_ms
+        )
+    ) +
+    ggplot2::geom_ribbon(color = "grey", fill = "grey") +
+    ggplot2::geom_point(
+        inherit.aes = FALSE,
+        data = d_observed_sample,
+        mapping = aes(
+            x = plotting_id,
+            y = stimulus_rt
+        ),
+        shape = 20
+    ) +
+    ggplot2::coord_cartesian(
+        ylim = c(0, 3000)
+    ) +
+    ggplot2::scale_y_continuous(
+        breaks = seq(0, 3000, 500)
+    ) +
+    ggplot2::theme(
+        panel.grid.major.y = ggplot2::element_line(
+            linetype = "dashed",
+            color = "black",
+            linewidth = 0.1
+        )
+    ) +
+    ggplot2::labs(
+        x = "Reaction time ID",
+        y = "Reaction time (ms)"
     )
-  ) +
-  ggplot2::geom_ribbon(color = "grey", fill = "grey") +
-  ggplot2::geom_point(
-    inherit.aes = FALSE,
-    data = d_observed_sample,
-    mapping = aes(
-      x = plotting_id,
-      y = stimulus_rt
-    ),
-    shape = 20
-  ) +
-  ggplot2::coord_cartesian(
-    ylim = c(0, 3000)
-  ) +
-  ggplot2::scale_y_continuous(
-    breaks = seq(0, 3000, 500)
-  ) +
-  ggplot2::theme(
-    panel.grid.major.y = ggplot2::element_line(
-      linetype = "dashed",
-      color = "black",
-      linewidth = 0.1
-    )
-  ) +
-  ggplot2::labs(
-    x = "Reaction time ID",
-    y = "Reaction time (ms)"
-  )
 ```
 
 # Parameter estimates
@@ -293,50 +293,50 @@ obtained after fitting the model are shown in the table below:
 
 ```{r parameter estimates}
 d_posterior_summary %>%
-  dplyr::filter(
-    .,
-    startsWith(variable, "beta")
-  ) %>%
-  dplyr::select(
-    .,
-    variable,
-    mean,
-    median,
-    sd,
-    q025,
-    q975
-  ) %>%
-  dplyr::mutate(
-    .,
-    dplyr::across(
-      .cols = variable,
-      .fn = \(varname) dplyr::case_when(
-        varname == "beta_length" ~ "Length",
-        varname == "beta_aoa" ~ "AoA",
-        varname == "beta_subfreq" ~ "Subjective frequency",
-        varname == "beta_concreteness" ~ "Concreteness"
-      )
-    )
-  ) %>%
-  knitr::kable(
-    .,
-    format = "html",
-    col.names = c(
-      "Variable",
-      "Mean",
-      "Median",
-      "SD",
-      "Q00.25",
-      "Q97.50"
-    ),
-    digits = 3,
-    caption = "
+    dplyr::filter(
+        .,
+        startsWith(variable, "beta")
+    ) %>%
+    dplyr::select(
+        .,
+        variable,
+        mean,
+        median,
+        sd,
+        q025,
+        q975
+    ) %>%
+    dplyr::mutate(
+        .,
+        dplyr::across(
+            .cols = variable,
+            .fn = \(varname) dplyr::case_when(
+                varname == "beta_length" ~ "Length",
+                varname == "beta_aoa" ~ "AoA",
+                varname == "beta_subfreq" ~ "Subjective frequency",
+                varname == "beta_concreteness" ~ "Concreteness"
+            )
+        )
+    ) %>%
+    knitr::kable(
+        .,
+        format = "html",
+        col.names = c(
+            "Variable",
+            "Mean",
+            "Median",
+            "SD",
+            "Q00.25",
+            "Q97.50"
+        ),
+        digits = 3,
+        caption = "
         A summary of 40000 posterior estimates of the coefficients
         for word length, concreteness, subjective frequency and age
         of acquisition (AoA).
     "
-  ) %>%
-  kableExtra::kable_styling()
+    ) %>%
+    kableExtra::kable_styling()
 ```
 
 As can be seen by looking at the central 95% percentile intervals in the table
@@ -354,7 +354,7 @@ the plots below, which show the predicted reaction times when all predictors
 except a focal one are fixed to a certain value.
 
 We'll fix each of the non-focal predictors' value to the sample mean. The
-participant-specific \(alpha_S\) coefficients are set to 0, which corresponds
+participant-specific \(\alpha_S\) coefficients are set to 0, which corresponds
 to no strong participant-specific contribution to the magnitude of the predicted
 reaction times. The same was done for the word-specific coefficients
 \(\gamma_W\). The \(delta\) coefficient was also set to 0 since it only shifts

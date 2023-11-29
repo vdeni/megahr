@@ -46,6 +46,8 @@ data/
 **/*RData
 **/*parquet
 
+analyses/stats/plots
+
 analyses/stats/analyses_files/
 analyses/stats/analyses_model*
 !analyses/stats/analyses_model*.stan

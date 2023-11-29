@@ -153,3 +153,15 @@ ggplot2::ggplot(
         x = "Word length",
         y = "Reaction time (ms)"
     )
+
+ggplot2::ggsave(
+    here::here(
+        "analyses",
+        "stats",
+        "plots",
+        "counterfactual_length.png"
+    ),
+    device = "png",
+    dpi = 400,
+    bg = "white"
+)

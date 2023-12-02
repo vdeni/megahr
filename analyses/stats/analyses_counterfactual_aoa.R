@@ -7,7 +7,13 @@ library(stringr)
 
 l_data <- readRDS(here::here("data", "helpers", "l_analysis_data.RData"))
 
-model_fit <- readRDS(here::here("analyses", "stats", "analyses_model_fit.RData"))
+model_fit <- readRDS(
+    here::here(
+        "analyses",
+        "stats",
+        "analyses_model_fit.RData"
+    )
+)
 
 model_variables <- c(
     "alpha_0",
@@ -40,7 +46,7 @@ counterfactual_model <- cmdstanr::cmdstan_model(
     stan_file = here::here(
         "analyses",
         "stats",
-        "analyses_counterfactual_length.stan"
+        "analyses_counterfactual_aoa.stan"
     ),
     include_paths = c(
         here::here(
@@ -51,23 +57,25 @@ counterfactual_model <- cmdstanr::cmdstan_model(
     stanc_options = list("O1")
 )
 
+aoa_counterfactual <- seq(1, 30)
+
 l_data[["N_subsample"]] <- 1000
-l_data[["min_wordlen"]] <- 2
-l_data[["max_wordlen"]] <- 12
 l_data[["alpha_0_fixed"]] <- posterior_means[["alpha_0"]]
 l_data[["sigma_rt_fixed"]] <- posterior_means[["sigma_rt"]]
-l_data[["sub_freq_fixed"]] <- 3
-l_data[["aoa_fixed"]] <- 18
+l_data[["subfreq_fixed"]] <- 3
 l_data[["concreteness_fixed"]] <- 3
+l_data[["length_fixed"]] <- 7
+l_data[["aoa_counterfactual"]] <- aoa_counterfactual
+l_data[["N_aoa_counterfactual"]] <- length(aoa_counterfactual)
 
-counterfactual_lengths <- counterfactual_model$generate_quantities(
+counterfactual_aoa <- counterfactual_model$generate_quantities(
     model_draws_sample,
     data = l_data,
     parallel_chains = 4,
     sig_figs = 4
 )
 
-counterfactual_lengths_summary <- counterfactual_lengths$summary(
+counterfactual_aoa_summary <- counterfactual_aoa$summary(
     "mean" = mean,
     "quantiles" = ~ quantile(., probs = c(.025, .975))
 ) %>%
@@ -76,81 +84,80 @@ counterfactual_lengths_summary <- counterfactual_lengths$summary(
         "q025" = "2.5%",
         "q975" = "97.5%"
     )
-counterfactual_lengths_summary$word_length <- stringr::str_extract(
-    counterfactual_lengths_summary$variable,
+
+counterfactual_aoa_summary$aoa <- stringr::str_extract(
+    counterfactual_aoa_summary$variable,
     r"{\d+(?=\])}"
 ) %>%
     as.integer(.) %>%
     {
-        . + 1
+        aoa_counterfactual[.]
     }
 
-counterfactual_lengths_summary$rt_id <- stringr::str_extract(
-    counterfactual_lengths_summary$variable,
+counterfactual_aoa_summary$rt_id <- stringr::str_extract(
+    counterfactual_aoa_summary$variable,
     r"{(?<=\[)\d+}"
 ) %>%
     as.integer(.)
 
 plot_data <- dplyr::summarise(
-    counterfactual_lengths_summary,
+    counterfactual_aoa_summary,
     m_rt = mean(mean),
     m_stderr_q025 = quantile(mean, .025),
     m_stderr_q975 = quantile(mean, .975),
     m_q025 = mean(q025),
     m_q975 = mean(q975),
-    .by = "word_length"
+    .by = "aoa"
 )
-plot_data$word_length <- as.factor(plot_data$word_length)
 
 ggplot2::ggplot(
     data = plot_data,
     mapping = ggplot2::aes(
-        x = word_length,
+        x = aoa,
         y = m_rt,
         ymin = m_q025,
         ymax = m_q975
     )
 ) +
-    ggplot2::geom_errorbar(
-        color = "gray",
-        linewidth = 1
-    ) +
-    ggplot2::geom_pointrange(
+    ggplot2::geom_ribbon(fill = "lightgray") +
+    ggplot2::geom_ribbon(
+        fill = "darkgray",
         inherit.aes = FALSE,
         data = plot_data,
-        mapping = aes(
-            x = word_length,
-            y = m_rt,
+        mapping = ggplot2::aes(
             ymin = m_stderr_q025,
-            ymax = m_stderr_q975
-        ),
-        color = "black",
-        linewidth = 1,
-        size = 0.5
+            ymax = m_stderr_q975,
+            x = aoa
+        )
     ) +
+    ggplot2::geom_line(linewidth = 0.7) +
     ggplot2::theme_minimal() +
     ggplot2::theme(
-        panel.grid.major.x = ggplot2::element_blank(),
-        panel.grid.minor.x = ggplot2::element_blank(),
+        panel.grid.major.x = ggplot2::element_line(
+            color = "grey",
+            linetype = "dashed",
+            linewidth = 0.7
+        ),
+        panel.grid.minor.x = ggplot2::element_line(
+            color = "grey",
+            linetype = "dashed",
+            linewidth = 0.7
+        ),
         panel.grid.major.y = ggplot2::element_line(
             color = "grey",
-            linetype = "dotted",
-            linewidth = 1
+            linetype = "dashed",
+            linewidth = 0.7
         ),
         panel.grid.minor.y = ggplot2::element_blank()
     ) +
     ggplot2::scale_y_continuous(
         breaks = seq(0, 1400, by = 200),
-        limits = c(0, 1000),
+        limits = c(0, 1200),
         labels = seq(0, 1400, by = 200),
         minor_breaks = seq(0, 1400, by = 100)
     ) +
-    ggplot2::geom_hline(
-        yintercept = min(plot_data$m_rt),
-        linetype = "dashed"
-    ) +
     ggplot2::labs(
-        x = "Word length",
+        x = "Subjective frequency rating",
         y = "Reaction time (ms)"
     )
 
@@ -159,7 +166,7 @@ ggplot2::ggsave(
         "analyses",
         "stats",
         "plots",
-        "counterfactual_length.png"
+        "counterfactual_aoa.png"
     ),
     device = "png",
     dpi = 600,

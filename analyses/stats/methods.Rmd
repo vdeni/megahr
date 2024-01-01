@@ -6,52 +6,50 @@ output:
 ---
 
 ```{r setup}
-renv::activate()
-
 library(here)
 library(readr)
 library(dplyr)
 
 d_megart <- readr::read_delim(
-  here::here(
-    "data",
-    "megart",
-    "clean",
-    "data_megart.delim"
-  ),
-  delim = "|"
+    here::here(
+        "data",
+        "megart",
+        "clean",
+        "data_megart.delim"
+    ),
+    delim = "|"
 )
 
 d_analysis <- readr::read_delim(
-  here::here(
-    "data",
-    "analysis",
-    "analysis-data.delim"
-  ),
-  delim = "|"
+    here::here(
+        "data",
+        "analysis",
+        "analysis-data.delim"
+    ),
+    delim = "|"
 )
 
 l_excludes <- readRDS(
-  here::here(
-    "data",
-    "helpers",
-    "l_n_exclude.RData"
-  )
+    here::here(
+        "data",
+        "helpers",
+        "l_n_exclude.RData"
+    )
 )
 ```
 
 ```{r counts}
 l_cnts <- list(
-  "total_ptcpt" = dplyr::n_distinct(d_megart$id),
-  "total_reactions" = nrow(d_megart),
-  "total_word" = dplyr::filter(d_megart, string_type == "word") %>%
-    dplyr::pull(string) %>%
-    dplyr::n_distinct(
-      .
-    ),
-  "total_pseudoword" = dplyr::filter(d_megart, string_type == "pseudoword") %>%
-    dplyr::pull(string) %>%
-    dplyr::n_distinct(.)
+    "total_ptcpt" = dplyr::n_distinct(d_megart$id),
+    "total_reactions" = nrow(d_megart),
+    "total_word" = dplyr::filter(d_megart, string_type == "word") %>%
+        dplyr::pull(string) %>%
+        dplyr::n_distinct(
+            .
+        ),
+    "total_pseudoword" = dplyr::filter(d_megart, string_type == "pseudoword") %>%
+        dplyr::pull(string) %>%
+        dplyr::n_distinct(.)
 )
 ```
 

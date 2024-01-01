@@ -157,7 +157,7 @@ ggplot2::ggplot(
         minor_breaks = seq(0, 1400, by = 100)
     ) +
     ggplot2::labs(
-        x = "Subjective frequency rating",
+        x = "Age-of-acqusition rating",
         y = "Reaction time (ms)"
     )
 

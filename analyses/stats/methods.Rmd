@@ -62,7 +62,7 @@ to the displayed stimuli (2 participants,
 Next, we excluded all reactions to pseudowords, which left us with 
 `r l_excludes$n_post_nonword` reactions. After excluding all the incorrect
 responses, we were left with `r l_excludes$n_post_incorrect` data points.
-After exlcuding words to which less than 30 reactions were provided, we were
+After excluding words to which less than 20 reactions were provided, we were
 left with `r l_excludes$n_post_rare_react_word` reactions. Finally, after
 intersecting the reaction time data with the psycholinguistic estimates data,
 we were left with `r l_excludes$n_post_intersect` reaction times to

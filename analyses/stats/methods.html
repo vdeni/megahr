@@ -241,7 +241,7 @@ overflow: visible;
 </style>
 <style type="text/css" data-origin="pandoc">
 pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span { line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
@@ -435,9 +435,7 @@ display: none;
 </div>
 
 
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a>renv<span class="sc">::</span><span class="fu">activate</span>()</span>
-<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a></span>
-<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="fu">library</span>(here)</span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(here)</span></code></pre></div>
 <pre><code>## here() starts at /home/denis/Documents/doktorski/megahr</code></pre>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="fu">library</span>(readr)</span>
 <span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span></code></pre></div>
@@ -450,16 +448,16 @@ display: none;
 ## 
 ##     intersect, setdiff, setequal, union</code></pre>
 <div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a>d_megart <span class="ot">&lt;-</span> readr<span class="sc">::</span><span class="fu">read_delim</span>(</span>
-<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a>  here<span class="sc">::</span><span class="fu">here</span>(</span>
-<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a>    <span class="st">&quot;data&quot;</span>,</span>
-<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a>    <span class="st">&quot;megart&quot;</span>,</span>
-<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a>    <span class="st">&quot;clean&quot;</span>,</span>
-<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a>    <span class="st">&quot;data_megart.delim&quot;</span></span>
-<span id="cb7-7"><a href="#cb7-7" tabindex="-1"></a>  ),</span>
-<span id="cb7-8"><a href="#cb7-8" tabindex="-1"></a>  <span class="at">delim =</span> <span class="st">&quot;|&quot;</span></span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a>    here<span class="sc">::</span><span class="fu">here</span>(</span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a>        <span class="st">&quot;data&quot;</span>,</span>
+<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a>        <span class="st">&quot;megart&quot;</span>,</span>
+<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a>        <span class="st">&quot;clean&quot;</span>,</span>
+<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a>        <span class="st">&quot;data_megart.delim&quot;</span></span>
+<span id="cb7-7"><a href="#cb7-7" tabindex="-1"></a>    ),</span>
+<span id="cb7-8"><a href="#cb7-8" tabindex="-1"></a>    <span class="at">delim =</span> <span class="st">&quot;|&quot;</span></span>
 <span id="cb7-9"><a href="#cb7-9" tabindex="-1"></a>)</span></code></pre></div>
 <pre><code>## Rows: 176964 Columns: 5</code></pre>
-<pre><code>## ── Column specification ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+<pre><code>## ── Column specification ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 ## Delimiter: &quot;|&quot;
 ## chr (3): id, string, string_type
 ## dbl (1): stimulus_rt
@@ -468,15 +466,15 @@ display: none;
 ## ℹ Use `spec()` to retrieve the full column specification for this data.
 ## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
 <div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a>d_analysis <span class="ot">&lt;-</span> readr<span class="sc">::</span><span class="fu">read_delim</span>(</span>
-<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a>  here<span class="sc">::</span><span class="fu">here</span>(</span>
-<span id="cb10-3"><a href="#cb10-3" tabindex="-1"></a>    <span class="st">&quot;data&quot;</span>,</span>
-<span id="cb10-4"><a href="#cb10-4" tabindex="-1"></a>    <span class="st">&quot;analysis&quot;</span>,</span>
-<span id="cb10-5"><a href="#cb10-5" tabindex="-1"></a>    <span class="st">&quot;analysis-data.delim&quot;</span></span>
-<span id="cb10-6"><a href="#cb10-6" tabindex="-1"></a>  ),</span>
-<span id="cb10-7"><a href="#cb10-7" tabindex="-1"></a>  <span class="at">delim =</span> <span class="st">&quot;|&quot;</span></span>
+<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a>    here<span class="sc">::</span><span class="fu">here</span>(</span>
+<span id="cb10-3"><a href="#cb10-3" tabindex="-1"></a>        <span class="st">&quot;data&quot;</span>,</span>
+<span id="cb10-4"><a href="#cb10-4" tabindex="-1"></a>        <span class="st">&quot;analysis&quot;</span>,</span>
+<span id="cb10-5"><a href="#cb10-5" tabindex="-1"></a>        <span class="st">&quot;analysis-data.delim&quot;</span></span>
+<span id="cb10-6"><a href="#cb10-6" tabindex="-1"></a>    ),</span>
+<span id="cb10-7"><a href="#cb10-7" tabindex="-1"></a>    <span class="at">delim =</span> <span class="st">&quot;|&quot;</span></span>
 <span id="cb10-8"><a href="#cb10-8" tabindex="-1"></a>)</span></code></pre></div>
-<pre><code>## Rows: 54235 Columns: 8
-## ── Column specification ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+<pre><code>## Rows: 81144 Columns: 8
+## ── Column specification ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 ## Delimiter: &quot;|&quot;
 ## chr (1): string
 ## dbl (7): id, string_id, stimulus_rt, num_letters, concreteness, subjective_f...
@@ -484,23 +482,23 @@ display: none;
 ## ℹ Use `spec()` to retrieve the full column specification for this data.
 ## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
 <div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a>l_excludes <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(</span>
-<span id="cb12-2"><a href="#cb12-2" tabindex="-1"></a>  here<span class="sc">::</span><span class="fu">here</span>(</span>
-<span id="cb12-3"><a href="#cb12-3" tabindex="-1"></a>    <span class="st">&quot;data&quot;</span>,</span>
-<span id="cb12-4"><a href="#cb12-4" tabindex="-1"></a>    <span class="st">&quot;helpers&quot;</span>,</span>
-<span id="cb12-5"><a href="#cb12-5" tabindex="-1"></a>    <span class="st">&quot;l_n_exclude.RData&quot;</span></span>
-<span id="cb12-6"><a href="#cb12-6" tabindex="-1"></a>  )</span>
+<span id="cb12-2"><a href="#cb12-2" tabindex="-1"></a>    here<span class="sc">::</span><span class="fu">here</span>(</span>
+<span id="cb12-3"><a href="#cb12-3" tabindex="-1"></a>        <span class="st">&quot;data&quot;</span>,</span>
+<span id="cb12-4"><a href="#cb12-4" tabindex="-1"></a>        <span class="st">&quot;helpers&quot;</span>,</span>
+<span id="cb12-5"><a href="#cb12-5" tabindex="-1"></a>        <span class="st">&quot;l_n_exclude.RData&quot;</span></span>
+<span id="cb12-6"><a href="#cb12-6" tabindex="-1"></a>    )</span>
 <span id="cb12-7"><a href="#cb12-7" tabindex="-1"></a>)</span></code></pre></div>
 <div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" tabindex="-1"></a>l_cnts <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
-<span id="cb13-2"><a href="#cb13-2" tabindex="-1"></a>  <span class="st">&quot;total_ptcpt&quot;</span> <span class="ot">=</span> dplyr<span class="sc">::</span><span class="fu">n_distinct</span>(d_megart<span class="sc">$</span>id),</span>
-<span id="cb13-3"><a href="#cb13-3" tabindex="-1"></a>  <span class="st">&quot;total_reactions&quot;</span> <span class="ot">=</span> <span class="fu">nrow</span>(d_megart),</span>
-<span id="cb13-4"><a href="#cb13-4" tabindex="-1"></a>  <span class="st">&quot;total_word&quot;</span> <span class="ot">=</span> dplyr<span class="sc">::</span><span class="fu">filter</span>(d_megart, string_type <span class="sc">==</span> <span class="st">&quot;word&quot;</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb13-5"><a href="#cb13-5" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">pull</span>(string) <span class="sc">%&gt;%</span></span>
-<span id="cb13-6"><a href="#cb13-6" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">n_distinct</span>(</span>
-<span id="cb13-7"><a href="#cb13-7" tabindex="-1"></a>      .</span>
-<span id="cb13-8"><a href="#cb13-8" tabindex="-1"></a>    ),</span>
-<span id="cb13-9"><a href="#cb13-9" tabindex="-1"></a>  <span class="st">&quot;total_pseudoword&quot;</span> <span class="ot">=</span> dplyr<span class="sc">::</span><span class="fu">filter</span>(d_megart, string_type <span class="sc">==</span> <span class="st">&quot;pseudoword&quot;</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb13-10"><a href="#cb13-10" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">pull</span>(string) <span class="sc">%&gt;%</span></span>
-<span id="cb13-11"><a href="#cb13-11" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">n_distinct</span>(.)</span>
+<span id="cb13-2"><a href="#cb13-2" tabindex="-1"></a>    <span class="st">&quot;total_ptcpt&quot;</span> <span class="ot">=</span> dplyr<span class="sc">::</span><span class="fu">n_distinct</span>(d_megart<span class="sc">$</span>id),</span>
+<span id="cb13-3"><a href="#cb13-3" tabindex="-1"></a>    <span class="st">&quot;total_reactions&quot;</span> <span class="ot">=</span> <span class="fu">nrow</span>(d_megart),</span>
+<span id="cb13-4"><a href="#cb13-4" tabindex="-1"></a>    <span class="st">&quot;total_word&quot;</span> <span class="ot">=</span> dplyr<span class="sc">::</span><span class="fu">filter</span>(d_megart, string_type <span class="sc">==</span> <span class="st">&quot;word&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb13-5"><a href="#cb13-5" tabindex="-1"></a>        dplyr<span class="sc">::</span><span class="fu">pull</span>(string) <span class="sc">%&gt;%</span></span>
+<span id="cb13-6"><a href="#cb13-6" tabindex="-1"></a>        dplyr<span class="sc">::</span><span class="fu">n_distinct</span>(</span>
+<span id="cb13-7"><a href="#cb13-7" tabindex="-1"></a>            .</span>
+<span id="cb13-8"><a href="#cb13-8" tabindex="-1"></a>        ),</span>
+<span id="cb13-9"><a href="#cb13-9" tabindex="-1"></a>    <span class="st">&quot;total_pseudoword&quot;</span> <span class="ot">=</span> dplyr<span class="sc">::</span><span class="fu">filter</span>(d_megart, string_type <span class="sc">==</span> <span class="st">&quot;pseudoword&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb13-10"><a href="#cb13-10" tabindex="-1"></a>        dplyr<span class="sc">::</span><span class="fu">pull</span>(string) <span class="sc">%&gt;%</span></span>
+<span id="cb13-11"><a href="#cb13-11" tabindex="-1"></a>        dplyr<span class="sc">::</span><span class="fu">n_distinct</span>(.)</span>
 <span id="cb13-12"><a href="#cb13-12" tabindex="-1"></a>)</span></code></pre></div>
 <p>In total, 92 participants took part in the study, providing a total
 of 176964 reactions to 2614 words and 2594 pseudowords. We excluded all
@@ -508,10 +506,10 @@ participants who had less than 90% of correct responses to the displayed
 stimuli (2 participants, 4022 reactions). Next, we excluded all
 reactions to pseudowords, which left us with 86471 reactions. After
 excluding all the incorrect responses, we were left with 82627 data
-points. After exlcuding words to which less than 30 reactions were
-provided, we were left with 54266 reactions. Finally, after intersecting
+points. After excluding words to which less than 20 reactions were
+provided, we were left with 81175 reactions. Finally, after intersecting
 the reaction time data with the psycholinguistic estimates data, we were
-left with 54235 reaction times to 1440 words. This data was subsequently
+left with 81144 reaction times to 2505 words. This data was subsequently
 analysed.</p>
 
 

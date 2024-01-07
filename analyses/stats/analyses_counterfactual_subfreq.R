@@ -152,7 +152,7 @@ ggplot2::ggplot(
     ) +
     ggplot2::scale_y_continuous(
         breaks = seq(0, 1400, by = 200),
-        limits = c(0, 1200),
+        limits = c(0, 1400),
         labels = seq(0, 1400, by = 200),
         minor_breaks = seq(0, 1400, by = 100)
     ) +

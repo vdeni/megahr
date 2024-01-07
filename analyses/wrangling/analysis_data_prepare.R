@@ -64,7 +64,7 @@ d_megart <- d_megart %>%
 
 n_post_incorrect <- nrow(d_megart)
 
-# exclude reactions provided to words that have less than 30 reaction times
+# exclude reactions provided to words that have less than 20 reaction times
 v_word_exclude <- d_megart %>%
     dplyr::summarise(
         .data = .,
@@ -73,7 +73,7 @@ v_word_exclude <- d_megart %>%
     ) %>%
     dplyr::filter(
         .data = .,
-        cnt < 30
+        cnt < 20
     ) %>%
     dplyr::pull(string)
 

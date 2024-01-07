@@ -130,29 +130,29 @@ ggplot2::ggplot(
             x = subfreq
         )
     ) +
-    ggplot2::geom_line(linewidth = 0.7) +
+    ggplot2::geom_line(linewidth = 0.3) +
     ggplot2::theme_minimal() +
     ggplot2::theme(
         panel.grid.major.x = ggplot2::element_line(
             color = "grey",
             linetype = "dashed",
-            linewidth = 0.7
+            linewidth = 0.5
         ),
         panel.grid.minor.x = ggplot2::element_line(
             color = "grey",
             linetype = "dashed",
-            linewidth = 0.7
+            linewidth = 0.5
         ),
         panel.grid.major.y = ggplot2::element_line(
             color = "grey",
             linetype = "dashed",
-            linewidth = 0.7
+            linewidth = 0.5
         ),
         panel.grid.minor.y = ggplot2::element_blank()
     ) +
     ggplot2::scale_y_continuous(
         breaks = seq(0, 1400, by = 200),
-        limits = c(0, 1400),
+        limits = c(0, 1230),
         labels = seq(0, 1400, by = 200),
         minor_breaks = seq(0, 1400, by = 100)
     ) +
@@ -171,6 +171,6 @@ ggplot2::ggsave(
     device = "png",
     dpi = 600,
     bg = "white",
-    width = 9,
-    height = 9 * 9 / 16
+    width = 8,
+    height = 8 * 9 / 16
 )

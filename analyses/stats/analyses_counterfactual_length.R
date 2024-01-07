@@ -113,7 +113,8 @@ ggplot2::ggplot(
 ) +
     ggplot2::geom_errorbar(
         color = "gray",
-        linewidth = 1
+        linewidth = 1,
+        width = 0.3
     ) +
     ggplot2::geom_pointrange(
         inherit.aes = FALSE,
@@ -125,8 +126,8 @@ ggplot2::ggplot(
             ymax = m_stderr_q975
         ),
         color = "black",
-        linewidth = 1,
-        size = 0.5
+        linewidth = 0.5,
+        size = 0.05
     ) +
     ggplot2::theme_minimal() +
     ggplot2::theme(
@@ -164,6 +165,6 @@ ggplot2::ggsave(
     device = "png",
     dpi = 600,
     bg = "white",
-    width = 9,
-    height = 9 * 9 / 16
+    width = 8,
+    height = 8 * 9 / 16
 )

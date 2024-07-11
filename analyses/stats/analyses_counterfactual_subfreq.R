@@ -119,7 +119,7 @@ ggplot2::ggplot(
         ymax = m_q975
     )
 ) +
-    ggplot2::geom_ribbon(fill = "lightgray") +
+    ggplot2::geom_ribbon(fill = "lightgray", alpha = 0.8) +
     ggplot2::geom_ribbon(
         fill = "darkgray",
         inherit.aes = FALSE,

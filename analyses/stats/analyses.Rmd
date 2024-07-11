@@ -15,6 +15,7 @@ library(duckdb)
 library(readr)
 library(knitr)
 library(kableExtra)
+library(tidyr)
 
 ggplot2::theme_set(ggplot2::theme_minimal())
 
@@ -52,6 +53,58 @@ DBI::dbExecute(
 DBI::dbExecute(
     conn = duck_conn,
     statement = "SET threads TO 4"
+)
+```
+
+# Checking the bivariate correlations between the variables in the model
+
+The bivariate Pearson and Spearman correlation coefficients between all of the
+predictors, and the predictors and the criterion are reported in the table
+below:
+
+```{r bivariate_correlations}
+cor_pearson <- d_observed %>%
+    dplyr::select(
+        .,
+        stimulus_rt,
+        num_letters,
+        concreteness,
+        subjective_frequency,
+        aoa
+    ) %>%
+    cor(
+        x = .,
+        use = "everything",
+        method = "pearson"
+    )
+
+cor_spearman <- d_observed %>%
+    dplyr::select(
+        .,
+        stimulus_rt,
+        num_letters,
+        concreteness,
+        subjective_frequency,
+        aoa
+    ) %>%
+    cor(
+        x = .,
+        use = "everything",
+        method = "spearman"
+    )
+
+cor_matrix <- matrix(
+    NA,
+    nrow = nrow(cor_pearson),
+    ncol = ncol(cor_pearson),
+    dimnames = dimnames(cor_pearson)
+)
+cor_matrix[upper.tri(cor_matrix)] <- cor_pearson[upper.tri(cor_pearson)]
+cor_matrix[lower.tri(cor_matrix)] <- cor_spearman[lower.tri(cor_spearman)]
+
+knitr::kable(
+    cor_matrix,
+    digits = 3
 )
 ```
 
@@ -292,6 +345,42 @@ concreteness and subjective frequency. The posterior parameter estimates
 obtained after fitting the model are shown in the table below:
 
 ```{r parameter estimates}
+stddev_data <- dplyr::summarise(
+    d_observed,
+    rt_stddev = sd(stimulus_rt),
+    num_letters_stddev = sd(num_letters),
+    concreteness_stddev = sd(concreteness),
+    subjective_frequency_stddev = sd(subjective_frequency),
+    aoa_stddev = sd(aoa)
+) %>%
+    tidyr::pivot_longer(
+        .,
+        cols = !dplyr::matches("rt_stddev"),
+        names_to = "variable",
+        names_pattern = "(.*)_stddev",
+        values_to = "stddev"
+    ) %>%
+    dplyr::mutate(
+        .,
+        standardization_coef = stddev / rt_stddev
+    ) %>%
+    dplyr::select(
+        .,
+        -c(rt_stddev, stddev)
+    ) %>%
+    dplyr::mutate(
+        .,
+        dplyr::across(
+            .cols = variable,
+            .fn = \(coef) case_when(
+                coef == "num_letters" ~ "beta_length",
+                coef == "concreteness" ~ "beta_concreteness",
+                coef == "subjective_frequency" ~ "beta_subfreq",
+                coef == "aoa" ~ "beta_aoa"
+            )
+        )
+    )
+
 d_posterior_summary %>%
     dplyr::filter(
         .,
@@ -305,6 +394,22 @@ d_posterior_summary %>%
         sd,
         q025,
         q975
+    ) %>%
+    dplyr::left_join(
+        x = .,
+        y = stddev_data,
+        by = "variable"
+    ) %>%
+    dplyr::mutate(
+        beta_coef = mean * standardization_coef * 10^4
+    ) %>%
+    dplyr::select(
+        .,
+        variable,
+        mean,
+        beta_coef,
+        dplyr::everything(),
+        -standardization_coef
     ) %>%
     dplyr::mutate(
         .,
@@ -323,7 +428,8 @@ d_posterior_summary %>%
         format = "html",
         col.names = c(
             "Variable",
-            "Mean",
+            "Posterior mean",
+            "Standardized coefficient",
             "Median",
             "SD",
             "Q00.25",
@@ -365,4 +471,3 @@ coefficients are set to their respective posterior means.
 ```{r closing}
 DBI::dbDisconnect(con = duck_conn, shutdown = TRUE)
 ```
-

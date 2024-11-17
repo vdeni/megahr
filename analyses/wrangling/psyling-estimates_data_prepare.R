@@ -49,7 +49,9 @@ d <- dplyr::rename(
     "aoa" = "d_m",
     "concreteness_n" = "k_n",
     "subjective_frequency_n" = "c_n",
-    "aoa_n" = "d_n"
+    "aoa_n" = "d_n",
+    "imageability" = "p_m",
+    "imageability_n" = "p_n"
 )
 
 readr::write_csv(

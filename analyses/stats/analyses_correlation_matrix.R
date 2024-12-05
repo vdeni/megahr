@@ -9,11 +9,11 @@ ggplot2::theme_set(ggplot2::theme_minimal())
 ggplot2::theme_update(
     panel.grid.major.x = ggplot2::element_line(
         color = "gray",
-        size = 0.7
+        linewidth = 0.7
     ),
     panel.grid.major.y = ggplot2::element_line(
         color = "gray",
-        size = 0.7
+        linewidth = 0.7
     )
 )
 
@@ -88,27 +88,61 @@ d_combined <- dplyr::left_join(
     by = "string"
 )
 
-.hist_plot(
-    d_combined,
-    ggplot2::aes(x = stimulus_rt),
-    axis_name = "Reaction time (ms)",
-    bins = 500,
-    x_limits = c(0, 3000)
-)
-
-.scatter_plot(
-    d_combined,
-    ggplot2::aes(
-        x = stimulus_rt,
-        y = aoa
+plot_configs <- list(
+    "stimulus_rt" = list(
+        axis_label = "Reaction time (ms)",
+        x_limits = c(0, 4000),
+        bins = 500,
+        diag_plot = "hist"
     ),
-    axis_label_x = "Reaction time (ms)",
-    axis_label_y = "Age of acquisition",
-    x_limits = c(0, 3000),
-    y_limits = c(0, 16)
+    "num_letters" = list(
+        axis_label = "Word length",
+        diag_plot = "bar"
+    ),
+    "concreteness" = list(
+        axis_label = "Concreteness",
+        x_limits = c(1, 5),
+        bins = 40,
+        diag_plot = "hist"
+    ),
+    "subjective_frequency" = list(
+        axis_label = "Subjective frequency",
+        x_limits = c(1, 5),
+        bins = 40,
+        diag_plot = "hist"
+    ),
+    "aoa" = list(
+        axis_label = "Age of acquisition",
+        x_limits = c(1, 18),
+        bins = 40,
+        diag_plot = "hist"
+    ),
+    "imageability" = list(
+        axis_label = "Imageability",
+        x_limits = c(1, 5),
+        bins = 40,
+        diag_plot = "hist"
+    )
 )
 
-.corr_plot(
-    d_combined$stimulus_rt,
-    d_combined$subjective_frequency
-)
+variable_combinations <- combn(x = names(plot_configs), m = 2)
+
+diag_plots <- list()
+for (colname in names(plot_configs)) {
+    if (plot_configs[[colname]]$diag_plot == "hist") {
+        p <- .hist_plot(
+            d_combined,
+            x = colname,
+            axis_label = plot_configs[[colname]]$axis_label,
+            x_limits = plot_configs[[colname]]$x_limits,
+            bins = plot_configs[[colname]]$bins
+        )
+    } else if (plot_configs[[colname]]$diag_plot == "bar") {
+        p <- .bar_plot(
+            data = d_combined,
+            x = colname,
+            axis_label = plot_configs[[colname]]$axis_label
+        )
+    }
+    diag_plots[[colname]] <- p
+}

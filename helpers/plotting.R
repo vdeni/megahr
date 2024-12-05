@@ -3,13 +3,13 @@ library(glue)
 
 .hist_plot <- function(
     data,
-    mapping,
-    axis_name,
+    x,
+    axis_label,
     bins = 30,
     x_limits = NULL) {
     p <- ggplot2::ggplot(
         data = data,
-        mapping = mapping
+        mapping = ggplot2::aes(x = .data[[x]])
     ) +
         ggplot2::geom_histogram(
             fill = "black",
@@ -17,7 +17,7 @@ library(glue)
             linewidth = 0
         ) +
         ggplot2::scale_x_continuous(
-            name = axis_name,
+            name = axis_label,
         ) +
         ggplot2::scale_y_continuous(
             name = "Count"
@@ -69,7 +69,7 @@ library(glue)
         p_val <- glue::glue("p = {round(res$p.value, 3)}")
     }
 
-    ggplot2::ggplot() +
+    p <- ggplot2::ggplot() +
         ggplot2::geom_text(
             data = data.frame(
                 x = glue::glue(
@@ -83,4 +83,22 @@ library(glue)
             size = 20
         ) +
         ggplot2::theme_void()
+
+    return(p)
+}
+
+.bar_plot <- function(
+    data,
+    x,
+    axis_label) {
+    ggplot2::ggplot(d_combined,
+        mapping = ggplot2::aes(x = num_letters)
+    ) +
+        ggplot2::geom_bar(
+            fill = "black"
+        ) +
+        ggplot2::labs(
+            x = axis_label,
+            y = "Count"
+        )
 }

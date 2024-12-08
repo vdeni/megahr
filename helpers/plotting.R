@@ -31,14 +31,18 @@ library(glue)
 
 .scatter_plot <- function(
     data,
-    mapping,
+    var_x,
+    var_y,
     axis_label_x,
     axis_label_y,
     x_limits = NULL,
     y_limits = NULL) {
     p <- ggplot2::ggplot(
         data = data,
-        mapping = mapping
+        mapping = ggplot2::aes(
+            x = .data[[var_x]],
+            y = .data[[var_y]]
+        )
     ) +
         ggplot2::geom_point(
             size = 2,
@@ -80,7 +84,7 @@ library(glue)
                 )
             ),
             mapping = ggplot2::aes(label = x, x = 5, y = 5),
-            size = 20
+            size = 7
         ) +
         ggplot2::theme_void()
 
@@ -92,7 +96,7 @@ library(glue)
     x,
     axis_label) {
     ggplot2::ggplot(d_combined,
-        mapping = ggplot2::aes(x = num_letters)
+        mapping = ggplot2::aes(x = .data[[x]])
     ) +
         ggplot2::geom_bar(
             fill = "black"

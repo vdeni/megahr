@@ -4,6 +4,8 @@ library(readr)
 library(dplyr)
 library(ggplot2)
 library(stringr)
+library(ggpubr)
+library(stringr)
 
 ggplot2::theme_set(ggplot2::theme_minimal())
 ggplot2::theme_update(
@@ -91,7 +93,7 @@ d_combined <- dplyr::left_join(
 plot_configs <- list(
     "stimulus_rt" = list(
         axis_label = "Reaction time (ms)",
-        x_limits = c(0, 4000),
+        limits = c(0, 4000),
         bins = 500,
         diag_plot = "hist"
     ),
@@ -101,25 +103,25 @@ plot_configs <- list(
     ),
     "concreteness" = list(
         axis_label = "Concreteness",
-        x_limits = c(1, 5),
+        limits = c(1, 5),
         bins = 40,
         diag_plot = "hist"
     ),
     "subjective_frequency" = list(
         axis_label = "Subjective frequency",
-        x_limits = c(1, 5),
+        limits = c(1, 5),
         bins = 40,
         diag_plot = "hist"
     ),
     "aoa" = list(
         axis_label = "Age of acquisition",
-        x_limits = c(1, 18),
+        limits = c(1, 18),
         bins = 40,
         diag_plot = "hist"
     ),
     "imageability" = list(
         axis_label = "Imageability",
-        x_limits = c(1, 5),
+        limits = c(1, 5),
         bins = 40,
         diag_plot = "hist"
     )
@@ -134,7 +136,7 @@ for (colname in names(plot_configs)) {
             d_combined,
             x = colname,
             axis_label = plot_configs[[colname]]$axis_label,
-            x_limits = plot_configs[[colname]]$x_limits,
+            x_limits = plot_configs[[colname]]$limits,
             bins = plot_configs[[colname]]$bins
         )
     } else if (plot_configs[[colname]]$diag_plot == "bar") {
@@ -146,3 +148,79 @@ for (colname in names(plot_configs)) {
     }
     diag_plots[[colname]] <- p
 }
+
+non_diag_plots <- list(
+    "upper" = list(),
+    "lower" = list()
+)
+
+for (col_idx in 1:ncol(variable_combinations)) {
+    varname_x <- variable_combinations[1, col_idx]
+    varname_y <- variable_combinations[2, col_idx]
+
+    var_x <- d_combined[[variable_combinations[1, col_idx]]]
+    var_y <- d_combined[[variable_combinations[2, col_idx]]]
+
+    var_combn <- paste(
+        varname_x,
+        varname_y,
+        sep = ","
+    )
+
+    non_diag_plots$upper[[var_combn]] <- .corr_plot(
+        var_x = var_x,
+        var_y = var_y
+    )
+
+    non_diag_plots$lower[[var_combn]] <- .scatter_plot(
+        data = d_combined,
+        var_x = varname_x,
+        var_y = varname_y,
+        axis_label_x = plot_configs[[varname_x]]$axis_label,
+        axis_label_y = plot_configs[[varname_y]]$axis_label,
+        x_limits = plot_configs[[varname_x]]$limits,
+        y_limits = plot_configs[[varname_y]]$limits
+    )
+}
+
+plot_list <- list()
+
+for (row_idx in seq_along(names(diag_plots))) {
+    for (col_idx in seq_along(names(diag_plots))) {
+        if (row_idx == col_idx) {
+            plot_list[[paste(row_idx, col_idx, sep = ",")]] <- diag_plots[[names(diag_plots)[row_idx]]]
+            next
+        }
+
+        .search_var_1 <- names(diag_plots)[[row_idx]]
+        .search_var_2 <- names(diag_plots)[[col_idx]]
+
+        .is_target_combn <- which(
+            stringr::str_detect(names(non_diag_plots$upper), .search_var_1) &
+                stringr::str_detect(names(non_diag_plots$upper), .search_var_2)
+        )
+
+        if (row_idx < col_idx) {
+            plot_list[[paste(row_idx, col_idx, sep = ",")]] <-
+                non_diag_plots$upper[[.is_target_combn]]
+        } else {
+            plot_list[[paste(row_idx, col_idx, sep = ",")]] <-
+                non_diag_plots$lower[[.is_target_combn]]
+        }
+    }
+}
+
+ggpubr::ggarrange(
+    plotlist = plot_list,
+    nrow = 6,
+    ncol = 6,
+    labels = list(
+        "Reaction time (ms)", "Word length", "Concreteness", "Subjective frequency", "Age of acquisition", "Imageability",
+        "Reaction time (ms)", "", "", "", "", "",
+        "Word length", "", "", "", "", "",
+        "Concreteness", "", "", "", "", "",
+        "Subjective frequency", "", "", "", "", "",
+        "Age of acquisition", "", "", "", "", "",
+        "Imageability", "", "", "", "", "", ""
+    )
+)

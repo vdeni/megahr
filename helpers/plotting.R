@@ -4,7 +4,6 @@ library(glue)
 .hist_plot <- function(
     data,
     x,
-    axis_label,
     bins = 30,
     x_limits = NULL) {
     p <- ggplot2::ggplot(
@@ -17,10 +16,10 @@ library(glue)
             linewidth = 0
         ) +
         ggplot2::scale_x_continuous(
-            name = axis_label,
+            name = "",
         ) +
         ggplot2::scale_y_continuous(
-            name = "Count"
+            name = ""
         ) +
         ggplot2::coord_cartesian(
             xlim = x_limits
@@ -33,8 +32,6 @@ library(glue)
     data,
     var_x,
     var_y,
-    axis_label_x,
-    axis_label_y,
     x_limits = NULL,
     y_limits = NULL) {
     p <- ggplot2::ggplot(
@@ -52,8 +49,8 @@ library(glue)
             shape = 21,
             stroke = 0
         ) +
-        ggplot2::scale_x_continuous(name = axis_label_x) +
-        ggplot2::scale_y_continuous(name = axis_label_y) +
+        ggplot2::scale_x_continuous(name = "") +
+        ggplot2::scale_y_continuous(name = "") +
         ggplot2::coord_cartesian(
             xlim = x_limits,
             ylim = y_limits
@@ -76,15 +73,17 @@ library(glue)
     p <- ggplot2::ggplot() +
         ggplot2::geom_text(
             data = data.frame(
-                x = glue::glue(
-                    "r = {round(res$estimate, 3)} ({round(res$conf.int[1], 3)}, {round(res$conf.int[2], 3)})",
-                    "t({res$parameter}) = {round(res$statistic, 3)}",
-                    "{p_val}",
-                    .sep = "\n"
+                x = paste(
+                    stringr::str_interp(
+                        "r = $[.3f]{res$estimate} ($[.3f]{res$conf.int[1]}, $[.3f]{res$conf.int[2]})"
+                    ),
+                    stringr::str_interp("t(${res$parameter}) = $[.3f]{res$statistic}"),
+                    stringr::str_interp("${p_val}"),
+                    sep = "\n"
                 )
             ),
             mapping = ggplot2::aes(label = x, x = 5, y = 5),
-            size = 7
+            size = 5
         ) +
         ggplot2::theme_void()
 
@@ -93,8 +92,7 @@ library(glue)
 
 .bar_plot <- function(
     data,
-    x,
-    axis_label) {
+    x) {
     ggplot2::ggplot(d_combined,
         mapping = ggplot2::aes(x = .data[[x]])
     ) +
@@ -102,7 +100,7 @@ library(glue)
             fill = "black"
         ) +
         ggplot2::labs(
-            x = axis_label,
-            y = "Count"
+            x = "",
+            y = ""
         )
 }

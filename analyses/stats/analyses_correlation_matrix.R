@@ -92,35 +92,29 @@ d_combined <- dplyr::left_join(
 
 plot_configs <- list(
     "stimulus_rt" = list(
-        axis_label = "Reaction time (ms)",
         limits = c(0, 4000),
         bins = 500,
         diag_plot = "hist"
     ),
     "num_letters" = list(
-        axis_label = "Word length",
         diag_plot = "bar"
     ),
     "concreteness" = list(
-        axis_label = "Concreteness",
         limits = c(1, 5),
         bins = 40,
         diag_plot = "hist"
     ),
     "subjective_frequency" = list(
-        axis_label = "Subjective frequency",
         limits = c(1, 5),
         bins = 40,
         diag_plot = "hist"
     ),
     "aoa" = list(
-        axis_label = "Age of acquisition",
         limits = c(1, 18),
         bins = 40,
         diag_plot = "hist"
     ),
     "imageability" = list(
-        axis_label = "Imageability",
         limits = c(1, 5),
         bins = 40,
         diag_plot = "hist"
@@ -135,15 +129,13 @@ for (colname in names(plot_configs)) {
         p <- .hist_plot(
             d_combined,
             x = colname,
-            axis_label = plot_configs[[colname]]$axis_label,
             x_limits = plot_configs[[colname]]$limits,
             bins = plot_configs[[colname]]$bins
         )
     } else if (plot_configs[[colname]]$diag_plot == "bar") {
         p <- .bar_plot(
             data = d_combined,
-            x = colname,
-            axis_label = plot_configs[[colname]]$axis_label
+            x = colname
         )
     }
     diag_plots[[colname]] <- p
@@ -176,8 +168,6 @@ for (col_idx in 1:ncol(variable_combinations)) {
         data = d_combined,
         var_x = varname_x,
         var_y = varname_y,
-        axis_label_x = plot_configs[[varname_x]]$axis_label,
-        axis_label_y = plot_configs[[varname_y]]$axis_label,
         x_limits = plot_configs[[varname_x]]$limits,
         y_limits = plot_configs[[varname_y]]$limits
     )
@@ -215,16 +205,17 @@ ggpubr::ggarrange(
     nrow = 6,
     ncol = 6,
     labels = list(
-        "Reaction time (ms)", "Word length", "Concreteness", "Subjective frequency", "Age of acquisition", "Imageability",
-        "2", "", "", "", "", "",
+        "Reaction time (ms)", "Word length", "Concreteness",
+        "Subjective frequency", "Age of acquisition", "Imageability",
+        "2", "1", "", "", "", "",
         "3", "", "", "", "", "",
         "4", "", "", "", "", "",
         "5", "", "", "", "", "",
         "6", "", "", "", "", ""
     ),
     label.x = c(
-        rep(0.2, 6),
-        0, rep(0, 5),
+        0.1, 0.17, 0.13, -0.05, 0.03, 0.17,
+        0, -1, rep(0, 4),
         0, rep(0, 5),
         0, rep(0, 5),
         0, rep(0, 5),
@@ -232,7 +223,7 @@ ggpubr::ggarrange(
     ),
     label.y = c(
         rep(1, 6),
-        0.7, rep(0, 5),
+        0.7, 1.7, rep(0, 4),
         0.7, rep(0, 5),
         0.7, rep(0, 5),
         0.7, rep(0, 5),

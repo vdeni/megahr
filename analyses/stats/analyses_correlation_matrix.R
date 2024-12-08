@@ -216,11 +216,26 @@ ggpubr::ggarrange(
     ncol = 6,
     labels = list(
         "Reaction time (ms)", "Word length", "Concreteness", "Subjective frequency", "Age of acquisition", "Imageability",
-        "Reaction time (ms)", "", "", "", "", "",
-        "Word length", "", "", "", "", "",
-        "Concreteness", "", "", "", "", "",
-        "Subjective frequency", "", "", "", "", "",
-        "Age of acquisition", "", "", "", "", "",
-        "Imageability", "", "", "", "", "", ""
+        "2", "", "", "", "", "",
+        "3", "", "", "", "", "",
+        "4", "", "", "", "", "",
+        "5", "", "", "", "", "",
+        "6", "", "", "", "", ""
+    ),
+    label.x = c(
+        rep(0.2, 6),
+        0, rep(0, 5),
+        0, rep(0, 5),
+        0, rep(0, 5),
+        0, rep(0, 5),
+        0, rep(0, 5)
+    ),
+    label.y = c(
+        rep(1, 6),
+        0.7, rep(0, 5),
+        0.7, rep(0, 5),
+        0.7, rep(0, 5),
+        0.7, rep(0, 5),
+        0.7, rep(0, 5)
     )
 )

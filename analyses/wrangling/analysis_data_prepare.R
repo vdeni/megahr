@@ -100,7 +100,8 @@ d_word_dupes <- dplyr::summarise(
     concreteness = sum(concreteness * concreteness_n) / sum(concreteness_n),
     subjective_frequency = sum(subjective_frequency * subjective_frequency_n) /
         sum(subjective_frequency_n),
-    aoa = sum(aoa * aoa_n) / sum(aoa_n)
+    aoa = sum(aoa * aoa_n) / sum(aoa_n),
+    imageability = sum(imageability * imageability_n) / sum(imageability_n)
 )
 
 d_psyling <- dplyr::filter(
@@ -133,7 +134,8 @@ d_analysis <- dplyr::inner_join(
         num_letters,
         concreteness,
         subjective_frequency,
-        aoa
+        aoa,
+        imageability
     )
 
 n_post_intersect <- nrow(d_analysis)

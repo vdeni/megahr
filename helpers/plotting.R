@@ -93,7 +93,7 @@ library(glue)
 .bar_plot <- function(
     data,
     x) {
-    ggplot2::ggplot(d_combined,
+    ggplot2::ggplot(data,
         mapping = ggplot2::aes(x = .data[[x]])
     ) +
         ggplot2::geom_bar(

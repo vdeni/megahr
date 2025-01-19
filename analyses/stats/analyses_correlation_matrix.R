@@ -22,30 +22,9 @@ ggplot2::theme_update(
 source(
     here::here(
         "helpers",
-        "pooled-statistics.R"
-    )
-)
-
-source(
-    here::here(
-        "helpers",
         "plotting.R"
     )
 )
-
-d_psyling <- readr::read_csv(
-    here::here(
-        "data",
-        "psycholinguistic-estimates",
-        "clean",
-        "psycholinguistic-estimates.csv"
-    )
-) |>
-    dplyr::select(
-        string,
-        imageability,
-        imageability_n
-    )
 
 d_megart <- readr::read_delim(
     here::here(
@@ -54,40 +33,6 @@ d_megart <- readr::read_delim(
         "analysis-data.delim"
     ),
     delim = "|"
-)
-
-v_psyling_dupes <- d_psyling$string[duplicated(d_psyling$string)]
-
-d_psyling_dupes <- d_psyling |>
-    dplyr::filter(
-        string %in% v_psyling_dupes
-    )
-
-d_psyling_dupes_aggregated <- d_psyling_dupes |>
-    dplyr::summarise(
-        imageability = .pooled_mean(imageability, imageability_n),
-        .by = string
-    )
-
-d_psyling_uniques <- d_psyling |>
-    dplyr::filter(
-        !string %in% v_psyling_dupes
-    ) |>
-    dplyr::select(
-        string,
-        imageability
-    )
-
-d_psyling_deduped <- dplyr::bind_rows(
-    d_psyling_uniques,
-    d_psyling_dupes_aggregated
-)
-
-d_combined <- dplyr::left_join(
-    x = d_megart,
-    y = d_psyling_deduped,
-    suffix = c("_megart", "_psyling"),
-    by = "string"
 )
 
 plot_configs <- list(
@@ -127,14 +72,14 @@ diag_plots <- list()
 for (colname in names(plot_configs)) {
     if (plot_configs[[colname]]$diag_plot == "hist") {
         p <- .hist_plot(
-            d_combined,
+            d_megart,
             x = colname,
             x_limits = plot_configs[[colname]]$limits,
             bins = plot_configs[[colname]]$bins
         )
     } else if (plot_configs[[colname]]$diag_plot == "bar") {
         p <- .bar_plot(
-            data = d_combined,
+            data = d_megart,
             x = colname
         )
     }
@@ -150,8 +95,8 @@ for (col_idx in 1:ncol(variable_combinations)) {
     varname_x <- variable_combinations[1, col_idx]
     varname_y <- variable_combinations[2, col_idx]
 
-    var_x <- d_combined[[variable_combinations[1, col_idx]]]
-    var_y <- d_combined[[variable_combinations[2, col_idx]]]
+    var_x <- d_megart[[variable_combinations[1, col_idx]]]
+    var_y <- d_megart[[variable_combinations[2, col_idx]]]
 
     var_combn <- paste(
         varname_x,
@@ -165,7 +110,7 @@ for (col_idx in 1:ncol(variable_combinations)) {
     )
 
     non_diag_plots$lower[[var_combn]] <- .scatter_plot(
-        data = d_combined,
+        data = d_megart,
         var_x = varname_x,
         var_y = varname_y,
         x_limits = plot_configs[[varname_x]]$limits,
@@ -200,7 +145,7 @@ for (row_idx in seq_along(names(diag_plots))) {
     }
 }
 
-ggpubr::ggarrange(
+p_arranged <- ggpubr::ggarrange(
     plotlist = plot_list,
     nrow = 6,
     ncol = 6,
@@ -214,7 +159,7 @@ ggpubr::ggarrange(
         "6", "", "", "", "", ""
     ),
     label.x = c(
-        0.1, 0.17, 0.13, -0.05, 0.03, 0.17,
+        0.15, 0.22, 0.18, 0.0, 0.08, 0.22,
         0, -1, rep(0, 4),
         0, rep(0, 5),
         0, rep(0, 5),
@@ -229,4 +174,16 @@ ggpubr::ggarrange(
         0.7, rep(0, 5),
         0.7, rep(0, 5)
     )
+)
+
+ggpubr::ggexport(
+    p_arranged,
+    filename = here::here(
+        "analyses",
+        "stats",
+        "plots",
+        "pairs_plot.jpg"
+    ),
+    width = 1600,
+    height = 1600 * 9 / 16
 )

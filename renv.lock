@@ -557,16 +557,8 @@
     },
     "duckdb": {
       "Package": "duckdb",
-      "Version": "1.1.2",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Requirements": [
-        "DBI",
-        "R",
-        "methods",
-        "utils"
-      ],
-      "Hash": "83a09ee9c8380fecfcea1daeaa99e3b2"
+      "Version": "0.8.1-2",
+      "Source": "Repository"
     },
     "evaluate": {
       "Package": "evaluate",

@@ -56,6 +56,90 @@ DBI::dbExecute(
 )
 ```
 
+# Descriptive statistics
+
+```{r descriptives}
+t_descriptives <- d_observed |>
+    dplyr::select(
+        -c(id, string_id)
+    ) |>
+    dplyr::summarise(
+        stimulus_rt_min = min(stimulus_rt),
+        stimulus_rt_m = mean(stimulus_rt),
+        stimulus_rt_q10 = quantile(stimulus_rt, prob = 0.1),
+        stimulus_rt_med = median(stimulus_rt),
+        stimulus_rt_q90 = quantile(stimulus_rt, prob = 0.9),
+        stimulus_rt_max = max(stimulus_rt),
+        stimulus_rt_sd = sd(stimulus_rt),
+        num_letters_min = min(num_letters),
+        num_letters_m = mean(num_letters),
+        num_letters_q10 = quantile(num_letters, prob = 0.1),
+        num_letters_med = median(num_letters),
+        num_letters_q90 = quantile(num_letters, prob = 0.9),
+        num_letters_max = max(num_letters),
+        num_letters_sd = sd(num_letters),
+        concreteness_min = min(concreteness),
+        concreteness_m = mean(concreteness),
+        concreteness_q10 = quantile(concreteness, prob = 0.1),
+        concreteness_med = median(concreteness),
+        concreteness_q90 = quantile(concreteness, prob = 0.9),
+        concreteness_max = max(concreteness),
+        concreteness_sd = sd(concreteness),
+        subjective_frequency_min = min(subjective_frequency),
+        subjective_frequency_m = mean(subjective_frequency),
+        subjective_frequency_q10 = quantile(subjective_frequency, prob = 0.1),
+        subjective_frequency_med = median(subjective_frequency),
+        subjective_frequency_q90 = quantile(subjective_frequency, prob = 0.9),
+        subjective_frequency_max = max(subjective_frequency),
+        subjective_frequency_sd = sd(subjective_frequency),
+        aoa_min = min(aoa),
+        aoa_m = mean(aoa),
+        aoa_q10 = quantile(aoa, prob = 0.1),
+        aoa_med = median(aoa),
+        aoa_q90 = quantile(aoa, prob = 0.9),
+        aoa_max = max(aoa),
+        aoa_sd = sd(aoa),
+        imageability_min = min(imageability),
+        imageability_m = mean(imageability),
+        imageability_q10 = quantile(imageability, prob = 0.1),
+        imageability_med = median(imageability),
+        imageability_q90 = quantile(imageability, prob = 0.9),
+        imageability_max = max(imageability),
+        imageability_sd = sd(imageability)
+    ) |>
+    tidyr::pivot_longer(
+        cols = dplyr::everything(),
+        names_to = c("variable", ".value"),
+        names_pattern = "(.*)_(min|max|med|m|q10|q90|sd)",
+    )
+
+t_descriptives$variable <- dplyr::case_when(
+    t_descriptives$variable == "stimulus_rt" ~ "Reaction time (ms)",
+    t_descriptives$variable == "num_letters" ~ "Word length",
+    t_descriptives$variable == "concreteness" ~ "Concreteness",
+    t_descriptives$variable == "subjective_frequency" ~ "Subjective frequency",
+    t_descriptives$variable == "aoa" ~ "Age of acquisition",
+    t_descriptives$variable == "imageability" ~ "Imageability"
+)
+
+knitr::kable(
+    t_descriptives,
+    format = "html",
+    col.names = c(
+        "Variable",
+        "Min",
+        "Mean",
+        "Q10",
+        "Median",
+        "Q90",
+        "Max",
+        "SD"
+    ),
+    digits = 2
+) |>
+    kableExtra::kable_styling()
+```
+
 # Checking the bivariate correlations between the variables in the model
 
 The bivariate Pearson and Spearman correlation coefficients between all of the
@@ -344,7 +428,7 @@ association between reaction times and word length, age of acquisition,
 concreteness and subjective frequency. The posterior parameter estimates
 obtained after fitting the model are shown in the table below:
 
-```{r parameter estimates}
+```{r parameter-estimates}
 stddev_data <- dplyr::summarise(
     d_observed,
     rt_stddev = sd(stimulus_rt),

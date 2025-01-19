@@ -56,7 +56,7 @@ ${DIR_DAT_HELPERS}/l_model_priors.RData: ${DIR_STATS}/analyses_model-dev_solver.
 ${DIR_DAT_HELPERS}/l_analysis_data.RData: ${DIR_STATS}/analyses_model_data.R
 	Rscript $<
 
-reports: ${DIR_STATS}/methods.html
+reports: ${DIR_STATS}/methods.html ${DIR_STATS}/analyses.html
 
 ${DIR_STATS}/%.html: ${DIR_STATS}/%.Rmd\
 	$(wildcard ${DIR_WRANGLING}/*)\

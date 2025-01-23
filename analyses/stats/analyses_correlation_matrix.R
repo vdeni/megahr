@@ -58,11 +58,6 @@ plot_configs <- list(
         limits = c(1, 18),
         bins = 40,
         diag_plot = "hist"
-    ),
-    "imageability" = list(
-        limits = c(1, 5),
-        bins = 40,
-        diag_plot = "hist"
     )
 )
 
@@ -147,32 +142,29 @@ for (row_idx in seq_along(names(diag_plots))) {
 
 p_arranged <- ggpubr::ggarrange(
     plotlist = plot_list,
-    nrow = 6,
-    ncol = 6,
+    nrow = 5,
+    ncol = 5,
     labels = list(
         "Reaction time (ms)", "Word length", "Concreteness",
-        "Subjective frequency", "Age of acquisition", "Imageability",
-        "2", "1", "", "", "", "",
-        "3", "", "", "", "", "",
-        "4", "", "", "", "", "",
-        "5", "", "", "", "", "",
-        "6", "", "", "", "", ""
+        "Subjective frequency", "Age of acquisition",
+        "2", "1", "", "", "",
+        "3", "", "", "", "",
+        "4", "", "", "", "",
+        "5", "", "", "", ""
     ),
     label.x = c(
-        0.15, 0.22, 0.18, 0.0, 0.08, 0.22,
-        0, -1, rep(0, 4),
-        0, rep(0, 5),
-        0, rep(0, 5),
-        0, rep(0, 5),
-        0, rep(0, 5)
+        0.17, 0.28, 0.22, 0.13, 0.14,
+        0, -1, rep(0, 3),
+        0, rep(0, 4),
+        0, rep(0, 4),
+        0, rep(0, 4)
     ),
     label.y = c(
-        rep(1, 6),
-        0.7, 1.7, rep(0, 4),
-        0.7, rep(0, 5),
-        0.7, rep(0, 5),
-        0.7, rep(0, 5),
-        0.7, rep(0, 5)
+        rep(1, 5),
+        0.7, 1.7, rep(0, 3),
+        0.7, rep(0, 4),
+        0.7, rep(0, 4),
+        0.7, rep(0, 4)
     )
 )
 

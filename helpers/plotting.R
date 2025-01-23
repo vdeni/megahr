@@ -64,20 +64,36 @@ library(glue)
     var_y) {
     res <- cor.test(x = var_x, y = var_y, method = "pearson")
 
-    if (round(res$p.value, 3) == 0) {
-        p_val <- "p < 0.01"
+    if (round(res$p.value, 2) == 0) {
+        p_val <- "p < .01"
     } else {
-        p_val <- glue::glue("p = {round(res$p.value, 3)}")
+        p_val <- glue::glue("p = {round(res$p.value, 2)}") |>
+            stringr::str_replace(
+                pattern = "^0",
+                replacement = ""
+            )
     }
+
+    r_val <- glue::glue("r = {sprintf('%.2f', res$estimate)}") |>
+        stringr::str_replace(
+            pattern = "0(?=\\.)",
+            replacement = ""
+        )
+
+    r_conf <- glue::glue(
+        "({sprintf('%.2f', res$conf.int[1])}, {sprintf('%.2f', res$conf.int[2])})"
+    ) |>
+        stringr::str_replace_all(
+            pattern = "0(?=\\.)",
+            replacement = ""
+        )
 
     p <- ggplot2::ggplot() +
         ggplot2::geom_text(
             data = data.frame(
                 x = paste(
-                    stringr::str_interp(
-                        "r = $[.3f]{res$estimate} ($[.3f]{res$conf.int[1]}, $[.3f]{res$conf.int[2]})"
-                    ),
-                    stringr::str_interp("t(${res$parameter}) = $[.3f]{res$statistic}"),
+                    stringr::str_interp("${r_val} ${r_conf}"),
+                    stringr::str_interp("t(${res$parameter}) = $[.2f]{res$statistic}"),
                     stringr::str_interp("${p_val}"),
                     sep = "\n"
                 )

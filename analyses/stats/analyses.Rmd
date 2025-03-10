@@ -140,6 +140,20 @@ knitr::kable(
     kableExtra::kable_styling()
 ```
 
+A summary of the number of reactions per word can be seen below:
+
+```{r}
+reaction_counts <- dplyr::summarise(
+    d_observed,
+    reaction_cnt = n(),
+    .by = string_id
+)
+
+range(reaction_counts$reaction_cnt)
+mean(reaction_counts$reaction_cnt)
+median(reaction_counts$reaction_cnt)
+```
+
 # Checking the bivariate correlations between the variables in the model
 
 The bivariate Pearson and Spearman correlation coefficients between all of the

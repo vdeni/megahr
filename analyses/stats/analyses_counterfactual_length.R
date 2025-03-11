@@ -102,7 +102,7 @@ plot_data <- dplyr::summarise(
 )
 plot_data$word_length <- as.factor(plot_data$word_length)
 
-ggplot2::ggplot(
+p_len <- ggplot2::ggplot(
     data = plot_data,
     mapping = ggplot2::aes(
         x = word_length,
@@ -155,16 +155,11 @@ ggplot2::ggplot(
         y = "Reaction time (ms)"
     )
 
-ggplot2::ggsave(
-    here::here(
+saveRDS(
+    p_len,
+    file = here::here(
         "analyses",
         "stats",
-        "plots",
-        "counterfactual_length.png"
-    ),
-    device = "png",
-    dpi = 600,
-    bg = "white",
-    width = 8,
-    height = 8 * 9 / 16
+        "p_counterfactual_len.RData"
+    )
 )

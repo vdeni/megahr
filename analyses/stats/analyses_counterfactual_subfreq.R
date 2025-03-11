@@ -110,7 +110,7 @@ plot_data <- dplyr::summarise(
     .by = "subfreq"
 )
 
-ggplot2::ggplot(
+p_subfreq <- ggplot2::ggplot(
     data = plot_data,
     mapping = ggplot2::aes(
         x = subfreq,
@@ -161,16 +161,11 @@ ggplot2::ggplot(
         y = "Reaction time (ms)"
     )
 
-ggplot2::ggsave(
-    here::here(
+saveRDS(
+    p_subfreq,
+    file = here::here(
         "analyses",
         "stats",
-        "plots",
-        "counterfactual_subfreq.png"
-    ),
-    device = "png",
-    dpi = 600,
-    bg = "white",
-    width = 8,
-    height = 8 * 9 / 16
+        "p_counterfactual_subfreq.RData"
+    )
 )

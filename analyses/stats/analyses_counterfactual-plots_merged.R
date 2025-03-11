@@ -35,6 +35,7 @@ ggpubr::ggarrange(
     labels = list("A", "B", "C")
 )
 
+.height <- 14
 ggplot2::ggsave(
     here::here(
         "analyses",
@@ -45,6 +46,6 @@ ggplot2::ggsave(
     device = "png",
     bg = "white",
     dpi = 600,
-    width = 12,
-    height = 12 * 9 / 16
+    height = .height,
+    width = .height * 9 / 16
 )
